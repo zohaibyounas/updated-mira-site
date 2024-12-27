@@ -35,7 +35,7 @@ const DoYouKnowSection = ({ paddingtop = false }) => {
                       : "onovo-service-grid-item onovo-hover-1"
                   }
                 >
-                  <div className="image">
+                  <div className="image flex justify-items-center">
                     <img
                       decoding="async"
                       src={item.image}

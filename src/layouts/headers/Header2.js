@@ -225,14 +225,13 @@ const Header2 = ({ darkHeader, cartButton }) => {
                   </div>
                 </div>
               </div>
-              <div className="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-2 align-self-center align-right hide-on-mobile-extra">
-                <div style={{ textAlign: "left !important" }}>
+              <div className="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-2 flex items-center justify-start space-x-2 lg:block hidden mt-[0.8rem] ">
+                <div className="flex items-center space-x-2 ">
                   <img
                     src="/assets/lang.png"
-                    alt={`flag`}
-                    className="h-[30px] w-[30px]  "
+                    alt="flag"
+                    className="h-[30px] w-[30px]"
                   />
-
                   <select
                     value={selectedLanguage}
                     onChange={handleChange}

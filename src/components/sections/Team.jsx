@@ -15,7 +15,10 @@ const TeamSection = ({ team }) => {
               <span>{t(Data.subtitle)}</span>
             </div>
             <h2 className="onovo-title-2">
-              <span dangerouslySetInnerHTML={{ __html: t(Data.title) }} />
+              <span
+                className="text-4xl"
+                dangerouslySetInnerHTML={{ __html: t(Data.title) }}
+              />
             </h2>
           </div>
 

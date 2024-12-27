@@ -29,11 +29,11 @@ const AboutSection = () => {
               </div>
 
               {/* Description */}
-              <div className="row flex flex-nowrap justify-center ">
+              <div className="row flex flex-nowrap justify-center">
                 {Data.items.map((item, key) => (
                   <div
                     key={`about-item-${key}`}
-                    className="col-xs-12 col-sm-12 col-md-4 col-lg-4 flex flex-col items-center bg-white border-2 border-black rounded-xl transform transition-transform duration-300  hover:text-black hover:scale-105 overflow-hidden mx-2 cursor-pointer "
+                    className="col-xs-12 col-sm-12 col-md-4 col-lg-4 flex flex-col items-center  border-2 border-black rounded-xl transform transition-all duration-700 hover:bg-[#007aff] hover:text-white hover:scale-105 overflow-hidden mx-2 cursor-pointer"
                     style={{ marginTop: "12px" }}
                   >
                     {/* Card Content */}
