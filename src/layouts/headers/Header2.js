@@ -230,7 +230,7 @@ const Header2 = ({ darkHeader, cartButton }) => {
                   <img
                     src="/assets/lang.png"
                     alt={`flag`}
-                    className="h-[30px] w-[30px] "
+                    className="h-[30px] w-[30px]  "
                   />
 
                   <select
