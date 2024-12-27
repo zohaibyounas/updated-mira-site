@@ -29,7 +29,7 @@ const AboutSection = () => {
               </div>
 
               {/* Description */}
-              <div className="row flex flex-nowrap justify-center lg:mx-6">
+              <div className="row flex flex-nowrap justify-center lg:mx-4 md:mx-6">
                 {Data.items.map((item, key) => (
                   <div
                     key={`about-item-${key}`}

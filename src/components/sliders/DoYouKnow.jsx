@@ -20,7 +20,7 @@ const DoYouKnowSection = ({ paddingtop = false }) => {
         } gap-bottom-140`}
       >
         <div className="container-xl">
-          <h3 className="text-center">{t("Do you know that?")}</h3>
+          <h3 className="text-center text-3xl">{t("Do you know that?")}</h3>
           {/* Do you know items */}
           <div className="row">
             {Data.items.map((item, key) => (
