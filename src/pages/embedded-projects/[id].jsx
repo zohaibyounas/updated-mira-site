@@ -29,10 +29,6 @@ const ProjectDetail = (props) => {
     prev_key,
     next_key = 0;
 
-  if (!ProjectDetail) {
-    return <div>Project not found. Please check back later.</div>;
-  }
-
   props.projects.forEach(function (item, key) {
     if (item.id == postData.id) {
       prev_key = key - 1;
@@ -256,18 +252,11 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const ProjectDetail = Data.items.find((item) => item.id === params.id);
-  if (!ProjectDetail) {
-    return {
-      notFound: true,
-    };
-  }
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
   return {
     props: {
-      ProjectDetail: ProjectDetail || null,
       data: postData,
       projects: allProjects,
     },
