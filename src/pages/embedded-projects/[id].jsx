@@ -2,9 +2,7 @@ import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
 import Link from "next/link";
 import ImageView from "@components/ImageView";
-
 import { useRouter } from "next/router";
-
 import {
   getSortedProjectsData,
   getAllProjectsIds,
