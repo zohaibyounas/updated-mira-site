@@ -68,7 +68,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml != "" && (
+              {postData.contentHtml !== "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -85,7 +85,7 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {typeof postData.details != "undefined" && (
+                  {postData.details && postData.details.items && (
                     <>
                       {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
@@ -164,7 +164,7 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {typeof postData.gallery != "undefined" && (
+          {postData.gallery && postData.gallery.items && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -184,9 +184,9 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {typeof postData.additional != "undefined" && (
+          {postData.additional && (
             <>
-              {/* Description */}
+              {/* Additional Description */}
               <div className="onovo-text gap-top-80">
                 <h6 className="text-uppercase">
                   {t(postData.additional.heading)}
@@ -253,11 +253,28 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
+
+  // Handle the case when no data is found for the project (e.g., after service items are deleted)
+  if (!postData) {
+    return {
+      notFound: true, // Return 404 if no postData found
+    };
+  }
+
+  // Sanitize postData to ensure no undefined values
+  const sanitizedPostData = {
+    ...postData,
+    contentHtml: postData.contentHtml || "", // Ensure contentHtml is never undefined
+    additional: postData.additional || null, // Default to null if not defined
+    gallery: postData.gallery || null, // Default to null if gallery is missing
+    details: postData.details || null, // Default to null if details are missing
+  };
+
   const allProjects = await getSortedProjectsData();
 
   return {
     props: {
-      data: postData,
+      data: sanitizedPostData,
       projects: allProjects,
     },
   };
