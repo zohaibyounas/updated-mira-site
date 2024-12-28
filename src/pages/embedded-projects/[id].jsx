@@ -2,7 +2,9 @@ import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
 import Link from "next/link";
 import ImageView from "@components/ImageView";
+
 import { useRouter } from "next/router";
+
 import {
   getSortedProjectsData,
   getAllProjectsIds,
@@ -49,6 +51,10 @@ const ProjectDetail = (props) => {
       ? window.location.origin
       : "";
   const shareUrl = `${origin}${asPath}`;
+
+  if (!postData) {
+    return <div>Service not found. Please check back later.</div>;
+  }
 
   return (
     <Layouts header={2} footer={2} darkHeader>
@@ -252,20 +258,35 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  // Ensure missing data is handled properly
-  postData.details = postData.details || { items: [] }; // Default to empty array if missing
-  postData.gallery = postData.gallery || { items: [] }; // Default to empty array if missing
-  postData.additional = postData.additional || null; // Set additional to null if missing
-
-  // Remove deleted services from the items list (if they still exist in the data)
-  if (postData.items) {
-    postData.items = postData.items.filter(
-      (item) =>
-        item.id !== "mobile-app-development" &&
-        item.id !== "hardware-and-firmware-dev" &&
-        item.id !== "end-to-end-product-dev"
-    );
+  // Add "Internet-of-Things" and remove deleted services
+  if (!postData) {
+    return {
+      props: {
+        data: null,
+        projects: allProjects,
+      },
+    };
   }
+
+  // Adding the "Internet-of-Things" object
+  const newService = {
+    id: "Internet-of-Things",
+    image: "/assets/images/service/cloud.png",
+    title: "Internet of Things",
+    text: "IoT connects devices and systems, enabling seamless data exchange. It helps businesses optimize operations, make data-driven decisions, and drive innovation.",
+    link: "service-details",
+  };
+
+  postData.items = postData.items || [];
+  postData.items.push(newService);
+
+  // Filter out deleted services
+  postData.items = postData.items.filter(
+    (item) =>
+      item.id !== "mobile-app-development" &&
+      item.id !== "hardware-and-firmware-dev" &&
+      item.id !== "end-to-end-product-dev"
+  );
 
   return {
     props: {
