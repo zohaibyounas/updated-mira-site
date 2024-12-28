@@ -68,7 +68,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml != "" && (
+              {postData.contentHtml && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -85,18 +85,16 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {typeof postData.details != "undefined" && (
-                    <>
-                      {postData.details.items.map((item, key) => (
-                        <li key={`details-item-${key}`}>
-                          <div>
-                            <strong>{t(item.label)}</strong>
-                          </div>
-                          <div>{t(item.value)}</div>
-                        </li>
-                      ))}
-                    </>
-                  )}
+                  {postData.details &&
+                    postData.details.items &&
+                    postData.details.items.map((item, key) => (
+                      <li key={`details-item-${key}`}>
+                        <div>
+                          <strong>{t(item.label)}</strong>
+                        </div>
+                        <div>{t(item.value)}</div>
+                      </li>
+                    ))}
 
                   <li>
                     <div>
@@ -164,7 +162,7 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {typeof postData.gallery != "undefined" && (
+          {postData.gallery && postData.gallery.items && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -184,7 +182,7 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {typeof postData.additional != "undefined" && (
+          {postData.additional && (
             <>
               {/* Description */}
               <div className="onovo-text gap-top-80">
@@ -208,7 +206,7 @@ const ProjectDetail = (props) => {
           {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id != 0 && prev_id != undefined && (
+              {prev_id && prev_id !== undefined && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -221,7 +219,7 @@ const ProjectDetail = (props) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id != 0 && next_id != undefined && (
+              {next_id && next_id !== undefined && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -256,7 +254,7 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  // Ensure all undefined values in postData are set to null or empty string
+  // Sanitize postData by replacing undefined with null or empty string
   const sanitizedPostData = {
     ...postData,
     contentHtml: postData.contentHtml || "",
