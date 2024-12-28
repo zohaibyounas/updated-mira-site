@@ -274,7 +274,10 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
                   </span>
                 </Link>
               )}
-              <Link href="/digital-solutions" className="page-navigation__posts">
+              <Link
+                href="/digital-solutions"
+                className="page-navigation__posts"
+              >
                 <i className="fas fa-th" />
               </Link>
               {next_id != 0 && next_id != undefined && (
