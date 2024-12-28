@@ -3,11 +3,13 @@ import PageBanner from "@components/PageBanner";
 import Link from "next/link";
 import ImageView from "@components/ImageView";
 import { useRouter } from "next/router";
+
 import {
   getSortedProjectsData,
   getAllProjectsIds,
   getProjectData,
 } from "@/src/lib/embedded-projects";
+
 import {
   FacebookShareButton,
   LinkedinShareButton,
@@ -17,29 +19,28 @@ import {
 } from "react-share";
 import { useTranslate } from "@/src/contexts/TranslateContext";
 
-const ProjectDetail = (props) => {
+const ProjectDetail = ({ data, projects }) => {
   const { t } = useTranslate();
 
-  const postData = props.data || {}; // Safeguard for postData being null/undefined
+  const postData = data || {}; // Default empty object if postData is missing
   let prev_id,
     next_id,
     prev_key,
     next_key = 0;
 
-  // Check if projects and postData exist
-  if (props.projects && postData) {
-    props.projects.forEach(function (item, key) {
+  if (projects && postData.id) {
+    projects.forEach(function (item, key) {
       if (item.id == postData.id) {
         prev_key = key - 1;
         next_key = key + 1;
       }
     });
 
-    props.projects.forEach(function (item, key) {
-      if (key == prev_key) {
+    projects.forEach(function (item, key) {
+      if (key === prev_key) {
         prev_id = item.id;
       }
-      if (key == next_key) {
+      if (key === next_key) {
         next_id = item.id;
       }
     });
@@ -62,41 +63,36 @@ const ProjectDetail = (props) => {
           {/* Image */}
           <div className="gap-bottom-80">
             <div className="project-image">
-              <img src={postData.image} alt={t(postData.title)} />
+              <img src={postData.image || ""} alt={t(postData.title || "")} />
             </div>
           </div>
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
               {postData.contentHtml && postData.contentHtml !== "" && (
-                <>
-                  {/* Description */}
-                  <div className="onovo-text">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: t(postData.contentHtml),
-                      }}
-                    />
-                  </div>
-                </>
+                <div className="onovo-text">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: t(postData.contentHtml),
+                    }}
+                  />
+                </div>
               )}
             </div>
+
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-4 offset-lg-1">
-              {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {postData.details && postData.details.items && (
-                    <>
-                      {postData.details.items.map((item, key) => (
-                        <li key={`details-item-${key}`}>
-                          <div>
-                            <strong>{t(item.label)}</strong>
-                          </div>
-                          <div>{t(item.value)}</div>
-                        </li>
-                      ))}
-                    </>
-                  )}
+                  {postData.details &&
+                    postData.details.items &&
+                    postData.details.items.map((item, key) => (
+                      <li key={`details-item-${key}`}>
+                        <div>
+                          <strong>{t(item.label)}</strong>
+                        </div>
+                        <div>{t(item.value)}</div>
+                      </li>
+                    ))}
                   <li>
                     <div>
                       <strong>{t("Share:")}</strong>
@@ -109,7 +105,7 @@ const ProjectDetail = (props) => {
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
                               quote={t(postData.title)}
-                              hashtag={"#" + postData.category}
+                              hashtag={`#${postData.category || ""}`}
                             >
                               <i className="icon fab fa-facebook" />
                             </FacebookShareButton>
@@ -119,7 +115,7 @@ const ProjectDetail = (props) => {
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
                               title={t(postData.title)}
-                              hashtag={"#" + postData.category}
+                              hashtag={`#${postData.category || ""}`}
                             >
                               <i className="icon fab fa-twitter"></i>
                             </TwitterShareButton>
@@ -164,39 +160,33 @@ const ProjectDetail = (props) => {
           </div>
 
           {postData.gallery && postData.gallery.items && (
-            <>
-              {/* Gallery items */}
-              <div className="row gap-row gallery-items onovo-custom-gallery">
-                {postData.gallery.items.map((item, key) => (
-                  <div
-                    key={`gallery-item-${key}`}
-                    className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
-                  >
-                    <div className="gallery-item">
-                      <a href={item.image} className="mfp-image">
-                        <img src={item.image} alt={t(item.alt)} />
-                      </a>
-                    </div>
+            <div className="row gap-row gallery-items onovo-custom-gallery">
+              {postData.gallery.items.map((item, key) => (
+                <div
+                  key={`gallery-item-${key}`}
+                  className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+                >
+                  <div className="gallery-item">
+                    <a href={item.image} className="mfp-image">
+                      <img src={item.image} alt={t(item.alt || "")} />
+                    </a>
                   </div>
-                ))}
-              </div>
-            </>
+                </div>
+              ))}
+            </div>
           )}
 
           {postData.additional && postData.additional.content && (
-            <>
-              {/* Additional Description */}
-              <div className="onovo-text gap-top-80">
-                <h6 className="text-uppercase">
-                  {t(postData.additional.heading)}
-                </h6>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: t(postData.additional.content),
-                  }}
-                />
-              </div>
-            </>
+            <div className="onovo-text gap-top-80">
+              <h6 className="text-uppercase">
+                {t(postData.additional.heading)}
+              </h6>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: t(postData.additional.content),
+                }}
+              />
+            </div>
           )}
         </div>
       </section>
@@ -204,7 +194,6 @@ const ProjectDetail = (props) => {
       {/* Onovo Navs */}
       <section className="onovo-section">
         <div className="container">
-          {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
               {prev_id && (
@@ -244,7 +233,6 @@ export default ProjectDetail;
 
 export async function getStaticPaths() {
   const paths = getAllProjectsIds();
-
   return {
     paths,
     fallback: false,
@@ -252,20 +240,20 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const postData = await getProjectData(params.id); // Fetch the project data
-  const allProjects = await getSortedProjectsData(); // Fetch all projects for navigation
+  // Ensure that the fetched data is properly handled
+  const postData = await getProjectData(params.id);
+  const allProjects = await getSortedProjectsData();
 
-  // Ensure the data is not undefined or null
   if (!postData) {
     return {
-      notFound: true, // If no data, return 404 page
+      notFound: true, // If no postData is found, return a 404 page
     };
   }
 
   return {
     props: {
-      data: postData || null, // Safeguard to ensure postData is not undefined
-      projects: allProjects || [], // Ensure allProjects is an array
+      data: postData || null, // Ensure postData is never undefined
+      projects: allProjects || [], // Ensure allProjects is an empty array if undefined
     },
   };
 }
