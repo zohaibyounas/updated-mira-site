@@ -68,7 +68,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml != "" && (
+              {postData.contentHtml && postData.contentHtml !== "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -85,7 +85,7 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {typeof postData.details != "undefined" && (
+                  {postData.details && postData.details.items && (
                     <>
                       {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
@@ -164,7 +164,7 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {typeof postData.gallery != "undefined" && (
+          {postData.gallery && postData.gallery.items && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -184,7 +184,7 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {typeof postData.additional != "undefined" && (
+          {postData.additional && postData.additional.heading && (
             <>
               {/* Description */}
               <div className="onovo-text gap-top-80">
@@ -208,7 +208,7 @@ const ProjectDetail = (props) => {
           {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id != 0 && prev_id != undefined && (
+              {prev_id && prev_id !== 0 && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -221,7 +221,7 @@ const ProjectDetail = (props) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id != 0 && next_id != undefined && (
+              {next_id && next_id !== 0 && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -254,6 +254,13 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
+
+  // Check if the postData is undefined or null, and handle the case
+  if (!postData) {
+    return {
+      notFound: true, // This will show the 404 page
+    };
+  }
 
   return {
     props: {
