@@ -240,6 +240,7 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
+
 export default ProjectDetail;
 
 export async function getStaticPaths() {
@@ -255,9 +256,18 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
+  // Ensure all undefined values in postData are set to null or empty string
+  const sanitizedPostData = {
+    ...postData,
+    contentHtml: postData.contentHtml || "",
+    additional: postData.additional || null,
+    gallery: postData.gallery || null,
+    details: postData.details || null,
+  };
+
   return {
     props: {
-      data: postData,
+      data: sanitizedPostData,
       projects: allProjects,
     },
   };
