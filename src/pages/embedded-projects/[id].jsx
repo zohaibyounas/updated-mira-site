@@ -23,7 +23,11 @@ import { useTranslate } from "@/src/contexts/TranslateContext";
 const ProjectDetail = (props) => {
   const { t } = useTranslate();
 
-  const postData = props.data;
+  const postData = props.data || {}; // Ensure postData is always defined
+  const details = postData.details || { items: [] }; // Default to empty array if details is missing
+  const gallery = postData.gallery || { items: [] }; // Default to empty object if gallery is missing
+  const additional = postData.additional || null; // Default to null if additional is missing
+
   let prev_id,
     next_id,
     prev_key,
@@ -68,7 +72,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml != "" && (
+              {postData.contentHtml !== "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -85,9 +89,9 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {typeof postData.details != "undefined" && (
+                  {details.items && details.items.length > 0 && (
                     <>
-                      {postData.details.items.map((item, key) => (
+                      {details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
                           <div>
                             <strong>{t(item.label)}</strong>
@@ -164,11 +168,11 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {typeof postData.gallery != "undefined" && (
+          {gallery.items && gallery.items.length > 0 && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
-                {postData.gallery.items.map((item, key) => (
+                {gallery.items.map((item, key) => (
                   <div
                     key={`gallery-item-${key}`}
                     className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
@@ -184,16 +188,14 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {typeof postData.additional != "undefined" && (
+          {additional && (
             <>
-              {/* Description */}
+              {/* Additional Description */}
               <div className="onovo-text gap-top-80">
-                <h6 className="text-uppercase">
-                  {t(postData.additional.heading)}
-                </h6>
+                <h6 className="text-uppercase">{t(additional.heading)}</h6>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: t(postData.additional.content),
+                    __html: t(additional.content),
                   }}
                 />
               </div>
@@ -240,6 +242,7 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
+
 export default ProjectDetail;
 
 export async function getStaticPaths() {
@@ -255,9 +258,19 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
+  // Ensure missing or undefined fields are handled
+  const details = postData.details || { items: [] }; // Default to empty array if details is missing
+  const gallery = postData.gallery || { items: [] }; // Default to empty array if gallery is missing
+  const additional = postData.additional || null; // Default to null if additional is missing
+
   return {
     props: {
-      data: postData,
+      data: {
+        ...postData,
+        details,
+        gallery,
+        additional,
+      },
       projects: allProjects,
     },
   };
