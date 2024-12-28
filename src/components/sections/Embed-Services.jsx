@@ -1,6 +1,7 @@
 import Data from "@data/sections/embedded-services.json";
 import Link from "next/link";
 import { useEffect } from "react";
+
 import { servicesHover } from "@common/utilits";
 import { useTranslate } from "@/src/contexts/TranslateContext";
 

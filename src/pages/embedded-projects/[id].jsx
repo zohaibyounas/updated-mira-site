@@ -83,7 +83,7 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {typeof postData.details != "undefined" && (
+                  {postData.details && postData.details.items && (
                     <>
                       {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
@@ -162,7 +162,7 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {typeof postData.gallery != "undefined" && (
+          {postData.gallery && postData.gallery.items && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -182,9 +182,9 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {typeof postData.additional != "undefined" && (
+          {postData.additional && (
             <>
-              {/* Description */}
+              {/* Additional Description */}
               <div className="onovo-text gap-top-80">
                 <h6 className="text-uppercase">
                   {t(postData.additional.heading)}
@@ -200,10 +200,9 @@ const ProjectDetail = (props) => {
         </div>
       </section>
 
-      {/* Onovo Navs */}
+      {/* Navigation */}
       <section className="onovo-section">
         <div className="container">
-          {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
               {prev_id != 0 && prev_id != undefined && (
@@ -243,7 +242,6 @@ export default ProjectDetail;
 
 export async function getStaticPaths() {
   const paths = getAllProjectsIds();
-
   return {
     paths,
     fallback: false,
@@ -254,17 +252,25 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  // Handle undefined values
-  if (postData) {
-    postData.details = postData.details || null; // Ensure details is never undefined
-    postData.gallery = postData.gallery || null; // Ensure gallery is never undefined
-    postData.additional = postData.additional || null; // Ensure additional info is never undefined
+  // Ensure missing data is handled properly
+  postData.details = postData.details || { items: [] }; // Default to empty array if missing
+  postData.gallery = postData.gallery || { items: [] }; // Default to empty array if missing
+  postData.additional = postData.additional || null; // Set additional to null if missing
+
+  // Remove deleted services from the items list (if they still exist in the data)
+  if (postData.items) {
+    postData.items = postData.items.filter(
+      (item) =>
+        item.id !== "mobile-app-development" &&
+        item.id !== "hardware-and-firmware-dev" &&
+        item.id !== "end-to-end-product-dev"
+    );
   }
 
   return {
     props: {
-      postData: postData || null, // Handle undefined postData
-      projects: allProjects || [], // Ensure projects is an array
+      data: postData,
+      projects: allProjects,
     },
   };
 }
