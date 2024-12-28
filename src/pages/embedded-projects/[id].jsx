@@ -2,6 +2,7 @@ import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
 import Link from "next/link";
 import ImageView from "@components/ImageView";
+
 import { useRouter } from "next/router";
 
 import {
@@ -28,23 +29,21 @@ const ProjectDetail = (props) => {
     prev_key,
     next_key = 0;
 
-  if (props.projects) {
-    props.projects.forEach(function (item, key) {
-      if (item.id == postData.id) {
-        prev_key = key - 1;
-        next_key = key + 1;
-      }
-    });
+  props.projects.forEach(function (item, key) {
+    if (item.id == postData.id) {
+      prev_key = key - 1;
+      next_key = key + 1;
+    }
+  });
 
-    props.projects.forEach(function (item, key) {
-      if (key == prev_key) {
-        prev_id = item.id;
-      }
-      if (key == next_key) {
-        next_id = item.id;
-      }
-    });
-  }
+  props.projects.forEach(function (item, key) {
+    if (key == prev_key) {
+      prev_id = item.id;
+    }
+    if (key == next_key) {
+      next_id = item.id;
+    }
+  });
 
   const { asPath } = useRouter();
   const origin =
@@ -63,36 +62,42 @@ const ProjectDetail = (props) => {
           {/* Image */}
           <div className="gap-bottom-80">
             <div className="project-image">
-              <img src={postData.image || ""} alt={t(postData.title || "")} />
+              <img src={postData.image} alt={t(postData.title)} />
             </div>
           </div>
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml && (
-                <div className="onovo-text">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: t(postData.contentHtml),
-                    }}
-                  />
-                </div>
+              {postData.contentHtml != "" && (
+                <>
+                  {/* Description */}
+                  <div className="onovo-text">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: t(postData.contentHtml),
+                      }}
+                    />
+                  </div>
+                </>
               )}
             </div>
-
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-4 offset-lg-1">
+              {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {postData.details &&
-                    postData.details.items &&
-                    postData.details.items.map((item, key) => (
-                      <li key={`details-item-${key}`}>
-                        <div>
-                          <strong>{t(item.label)}</strong>
-                        </div>
-                        <div>{t(item.value)}</div>
-                      </li>
-                    ))}
+                  {typeof postData.details != "undefined" && (
+                    <>
+                      {postData.details.items.map((item, key) => (
+                        <li key={`details-item-${key}`}>
+                          <div>
+                            <strong>{t(item.label)}</strong>
+                          </div>
+                          <div>{t(item.value)}</div>
+                        </li>
+                      ))}
+                    </>
+                  )}
+
                   <li>
                     <div>
                       <strong>{t("Share:")}</strong>
@@ -159,34 +164,40 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {postData.gallery && postData.gallery.items && (
-            <div className="row gap-row gallery-items onovo-custom-gallery">
-              {postData.gallery.items.map((item, key) => (
-                <div
-                  key={`gallery-item-${key}`}
-                  className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
-                >
-                  <div className="gallery-item">
-                    <a href={item.image} className="mfp-image">
-                      <img src={item.image} alt={t(item.alt || "")} />
-                    </a>
+          {typeof postData.gallery != "undefined" && (
+            <>
+              {/* Gallery items */}
+              <div className="row gap-row gallery-items onovo-custom-gallery">
+                {postData.gallery.items.map((item, key) => (
+                  <div
+                    key={`gallery-item-${key}`}
+                    className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+                  >
+                    <div className="gallery-item">
+                      <a href={item.image} className="mfp-image">
+                        <img src={item.image} alt={t(item.alt)} />
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
 
-          {postData.additional && postData.additional.content && (
-            <div className="onovo-text gap-top-80">
-              <h6 className="text-uppercase">
-                {t(postData.additional.heading)}
-              </h6>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: t(postData.additional.content),
-                }}
-              />
-            </div>
+          {typeof postData.additional != "undefined" && (
+            <>
+              {/* Description */}
+              <div className="onovo-text gap-top-80">
+                <h6 className="text-uppercase">
+                  {t(postData.additional.heading)}
+                </h6>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: t(postData.additional.content),
+                  }}
+                />
+              </div>
+            </>
           )}
         </div>
       </section>
@@ -194,9 +205,10 @@ const ProjectDetail = (props) => {
       {/* Onovo Navs */}
       <section className="onovo-section">
         <div className="container">
+          {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id && (
+              {prev_id != 0 && prev_id != undefined && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -209,7 +221,7 @@ const ProjectDetail = (props) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id && (
+              {next_id != 0 && next_id != undefined && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -228,11 +240,11 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
-
 export default ProjectDetail;
 
 export async function getStaticPaths() {
   const paths = getAllProjectsIds();
+
   return {
     paths,
     fallback: false,
@@ -243,16 +255,10 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  if (!postData) {
-    return {
-      notFound: true, // Return a 404 page if the project data is not found
-    };
-  }
-
   return {
     props: {
-      data: postData || null, // Ensure the postData is either the data or null
-      projects: allProjects || [], // Ensure the projects is an array, even if empty
+      data: postData,
+      projects: allProjects,
     },
   };
 }
