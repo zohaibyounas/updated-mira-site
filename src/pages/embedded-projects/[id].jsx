@@ -4,6 +4,7 @@ import Link from "next/link";
 import ImageView from "@components/ImageView";
 
 import { useRouter } from "next/router";
+
 import {
   getSortedProjectsData,
   getAllProjectsIds,
@@ -21,6 +22,7 @@ import { useTranslate } from "@/src/contexts/TranslateContext";
 
 const ProjectDetail = (props) => {
   const { t } = useTranslate();
+
   const postData = props.data;
   let prev_id,
     next_id,
@@ -251,28 +253,11 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
-
-  // Handle the case when no data is found for the project
-  if (!postData) {
-    return {
-      notFound: true,
-    };
-  }
-
-  // Sanitize postData to ensure no undefined values
-  const sanitizedPostData = {
-    ...postData,
-    contentHtml: postData.contentHtml || "", // Ensure contentHtml is never undefined
-    additional: postData.additional || null, // Default to null if not defined
-    gallery: postData.gallery || null, // Default to null if gallery is missing
-    details: postData.details || null, // Default to null if details are missing
-  };
-
   const allProjects = await getSortedProjectsData();
 
   return {
     props: {
-      data: sanitizedPostData,
+      data: postData,
       projects: allProjects,
     },
   };
