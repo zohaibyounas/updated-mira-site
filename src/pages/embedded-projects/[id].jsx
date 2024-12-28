@@ -2,7 +2,9 @@ import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
 import Link from "next/link";
 import ImageView from "@components/ImageView";
+
 import { useRouter } from "next/router";
+
 import {
   getSortedProjectsData,
   getAllProjectsIds,
@@ -26,6 +28,10 @@ const ProjectDetail = (props) => {
     next_id,
     prev_key,
     next_key = 0;
+
+  if (!ProjectDetail) {
+    return <div>Project not found. Please check back later.</div>;
+  }
 
   props.projects.forEach(function (item, key) {
     if (item.id == postData.id) {
@@ -66,7 +72,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml !== "" && (
+              {postData.contentHtml != "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -83,7 +89,7 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {postData.details && postData.details.items && (
+                  {typeof postData.details != "undefined" && (
                     <>
                       {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
@@ -162,7 +168,7 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {postData.gallery && postData.gallery.items && (
+          {typeof postData.gallery != "undefined" && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -182,9 +188,9 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {postData.additional && postData.additional.content && (
+          {typeof postData.additional != "undefined" && (
             <>
-              {/* Additional Description */}
+              {/* Description */}
               <div className="onovo-text gap-top-80">
                 <h6 className="text-uppercase">
                   {t(postData.additional.heading)}
@@ -206,7 +212,7 @@ const ProjectDetail = (props) => {
           {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id && (
+              {prev_id != 0 && prev_id != undefined && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -219,7 +225,7 @@ const ProjectDetail = (props) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id && (
+              {next_id != 0 && next_id != undefined && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -238,7 +244,6 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
-
 export default ProjectDetail;
 
 export async function getStaticPaths() {
@@ -251,20 +256,19 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const postData = await getProjectData(params.id); // Fetch the project data
-
-  // Ensure that postData is found and not undefined
-  if (!postData) {
+  const ProjectDetail = Data.items.find((item) => item.id === params.id);
+  if (!ProjectDetail) {
     return {
-      notFound: true, // Trigger a 404 page in Next.js
+      notFound: true,
     };
   }
-
-  const allProjects = await getSortedProjectsData(); // Fetch all projects for navigation
+  const postData = await getProjectData(params.id);
+  const allProjects = await getSortedProjectsData();
 
   return {
     props: {
-      data: postData || null, // If no project data found, return null
+      ProjectDetail: ProjectDetail || null,
+      data: postData,
       projects: allProjects,
     },
   };
