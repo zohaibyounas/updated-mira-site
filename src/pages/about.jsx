@@ -45,7 +45,7 @@ const About = (props) => {
         pageDesc={t("MIRA Empowering Future with Innovative Solutions!")}
       />
 
-      {/* Onovo About */}
+      {/* Onovo About section */}
       <section className="onovo-section gap-top-140 gap-bottom-140">
         <div className="container">
           <div className="row">
