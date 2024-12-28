@@ -4,7 +4,6 @@ import Link from "next/link";
 import ImageView from "@components/ImageView";
 
 import { useRouter } from "next/router";
-
 import {
   getSortedProjectsData,
   getAllProjectsIds,
@@ -22,7 +21,6 @@ import { useTranslate } from "@/src/contexts/TranslateContext";
 
 const ProjectDetail = (props) => {
   const { t } = useTranslate();
-
   const postData = props.data;
   let prev_id,
     next_id,
@@ -68,7 +66,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml && (
+              {postData.contentHtml != "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -85,16 +83,18 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {postData.details &&
-                    postData.details.items &&
-                    postData.details.items.map((item, key) => (
-                      <li key={`details-item-${key}`}>
-                        <div>
-                          <strong>{t(item.label)}</strong>
-                        </div>
-                        <div>{t(item.value)}</div>
-                      </li>
-                    ))}
+                  {typeof postData.details != "undefined" && (
+                    <>
+                      {postData.details.items.map((item, key) => (
+                        <li key={`details-item-${key}`}>
+                          <div>
+                            <strong>{t(item.label)}</strong>
+                          </div>
+                          <div>{t(item.value)}</div>
+                        </li>
+                      ))}
+                    </>
+                  )}
 
                   <li>
                     <div>
@@ -162,7 +162,7 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {postData.gallery && postData.gallery.items && (
+          {typeof postData.gallery != "undefined" && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -182,7 +182,7 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {postData.additional && (
+          {typeof postData.additional != "undefined" && (
             <>
               {/* Description */}
               <div className="onovo-text gap-top-80">
@@ -206,7 +206,7 @@ const ProjectDetail = (props) => {
           {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id && prev_id !== undefined && (
+              {prev_id != 0 && prev_id != undefined && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -219,7 +219,7 @@ const ProjectDetail = (props) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id && next_id !== undefined && (
+              {next_id != 0 && next_id != undefined && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -238,7 +238,6 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
-
 export default ProjectDetail;
 
 export async function getStaticPaths() {
@@ -252,16 +251,24 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
-  const allProjects = await getSortedProjectsData();
 
-  // Sanitize postData by replacing undefined with null or empty string
+  // Handle the case when no data is found for the project
+  if (!postData) {
+    return {
+      notFound: true,
+    };
+  }
+
+  // Sanitize postData to ensure no undefined values
   const sanitizedPostData = {
     ...postData,
-    contentHtml: postData.contentHtml || "",
-    additional: postData.additional || null,
-    gallery: postData.gallery || null,
-    details: postData.details || null,
+    contentHtml: postData.contentHtml || "", // Ensure contentHtml is never undefined
+    additional: postData.additional || null, // Default to null if not defined
+    gallery: postData.gallery || null, // Default to null if gallery is missing
+    details: postData.details || null, // Default to null if details are missing
   };
+
+  const allProjects = await getSortedProjectsData();
 
   return {
     props: {
