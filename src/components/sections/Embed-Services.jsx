@@ -26,7 +26,7 @@ const ServicesSection = ({ paddingtop = false }) => {
             {Data.items.map((item, key) => (
               <div
                 key={`services-item-${key}`}
-                className="col-xs-12 col-sm-12 col-md-6 col-lg-4 align-center"
+                className="col-xs-12 col-sm-12 col-md-6 col-lg-6 align-center"
               >
                 <Link href={`/embedded-solutions/${item.id}`}>
                   <div
