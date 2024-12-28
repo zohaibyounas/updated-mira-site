@@ -255,25 +255,10 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  // Ensure that postData and its nested properties are safe for serialization
-  if (!postData) {
-    return {
-      notFound: true, // If no data, return a 404 page
-    };
-  }
-
-  // Provide default values for potentially undefined properties
-  const sanitizedPostData = {
-    ...postData,
-    details: postData.details || { items: [] }, // Default to empty array if details is missing
-    gallery: postData.gallery || { items: [] }, // Default to empty array if gallery is missing
-    additional: postData.additional || {}, // Default to empty object if additional is missing
-  };
-
   return {
     props: {
-      data: sanitizedPostData, // Ensure all data is defined
-      projects: allProjects || [], // Ensure allProjects is an array
+      data: postData,
+      projects: allProjects,
     },
   };
 }
