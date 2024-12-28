@@ -255,10 +255,10 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id); // Fetch the project data
 
-  // If postData is not found, handle the missing data
+  // Ensure that postData is found and not undefined
   if (!postData) {
     return {
-      notFound: true, // Trigger Next.js 404 page
+      notFound: true, // Trigger a 404 page in Next.js
     };
   }
 
@@ -266,7 +266,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      data: postData,
+      data: postData || null, // If no project data found, return null
       projects: allProjects,
     },
   };
