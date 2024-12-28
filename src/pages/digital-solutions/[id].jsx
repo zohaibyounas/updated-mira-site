@@ -1,34 +1,46 @@
 import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
 import Link from "next/link";
-import appData from "@data/app.json";
-import { Formik } from "formik";
-import Data from "@data/sections/digital-services.json";
-import {
-  getAllServicesIds,
-  getServiceData,
-  getSortedServicesData,
-} from "@/src/lib/digital-services";
+import ImageView from "@components/ImageView";
 
-const ServiceDetail = ({ serviceDetail, postData, services }) => {
+import { useRouter } from "next/router";
+
+import {
+  getSortedProjectsData,
+  getAllProjectsIds,
+  getProjectData,
+} from "@/src/lib/embedded-projects";
+
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  PinterestShareButton,
+  RedditShareButton,
+  TwitterShareButton,
+} from "react-share";
+import { useTranslate } from "@/src/contexts/TranslateContext";
+
+const ProjectDetail = (props) => {
+  const { t } = useTranslate();
+
+  const postData = props.data || {}; // Ensure postData is always defined
+  const details = postData.details || { items: [] }; // Default to empty array if details is missing
+  const gallery = postData.gallery || { items: [] }; // Default to empty object if gallery is missing
+  const additional = postData.additional || null; // Default to null if additional is missing
+
   let prev_id,
     next_id,
     prev_key,
     next_key = 0;
 
-  // Handle missing serviceDetail case
-  if (!serviceDetail) {
-    return <div>Service not found. Please check back later.</div>;
-  }
-
-  services.forEach(function (item, key) {
+  props.projects.forEach(function (item, key) {
     if (item.id == postData.id) {
       prev_key = key - 1;
       next_key = key + 1;
     }
   });
 
-  services.forEach(function (item, key) {
+  props.projects.forEach(function (item, key) {
     if (key == prev_key) {
       prev_id = item.id;
     }
@@ -37,227 +49,158 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
     }
   });
 
+  const { asPath } = useRouter();
+  const origin =
+    typeof window !== "undefined" && window.location.origin
+      ? window.location.origin
+      : "";
+  const shareUrl = `${origin}${asPath}`;
+
   return (
     <Layouts header={2} footer={2} darkHeader>
-      <PageBanner pageTitle={postData.title} pageDesc={postData.short} />
+      <PageBanner pageTitle={t(postData.title)} pageDesc={t(postData.type)} />
 
-      {/* Onovo Service Detail */}
+      {/* Onovo Project Detail */}
       <section className="onovo-section gap-top-140">
         <div className="container">
-          <div className="row">
-            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-              {/* Image */}
-              <div className="gap-bottom-50">
-                <img src={postData.image} alt={postData.title} />
-              </div>
+          {/* Image */}
+          <div className="gap-bottom-80">
+            <div className="project-image">
+              <img src={postData.image} alt={t(postData.title)} />
+            </div>
+          </div>
 
-              {postData.contentHtml != "" && (
-                <div className="onovo-text">
-                  <div
-                    dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
-                  />
-                </div>
-              )}
-
-              {typeof postData.additional != "undefined" && (
+          <div className="row gap-bottom-80">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
+              {postData.contentHtml !== "" && (
                 <>
-                  {postData.additional.enabled == 1 && (
-                    <div className="onovo-text gap-top-50">
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: postData.additional.content,
-                        }}
-                      />
-                    </div>
-                  )}
+                  {/* Description */}
+                  <div className="onovo-text">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: t(postData.contentHtml),
+                      }}
+                    />
+                  </div>
                 </>
               )}
             </div>
-            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-              {/* Service menu */}
-              <div className="onovo-service-item onovo-service-no-icon gap-bottom-40">
-                <div className="onovo-service-item-inner onovo-hover-3 onovo-hover-black">
-                  <h5 className="title">
-                    <span data-splitting data-onovo-scroll>
-                      {" "}
-                      Services List{" "}
-                    </span>
-                  </h5>
-                  <div className="list">
-                    <ul>
-                      {Data.items.map((item, key) => (
-                        <li key={`services-item-${key}`}>
-                          <Link
-                            className="onovo-lnk"
-                            href={`/services/${item.id}`}
-                          >
-                            <span data-splitting data-onovo-scroll>
-                              {item.title}
-                            </span>
-                          </Link>
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-4 offset-lg-1">
+              {/* Project Info */}
+              <div className="onovo-project-info onovo-text-white text-uppercase">
+                <ul>
+                  {details.items && details.items.length > 0 && (
+                    <>
+                      {details.items.map((item, key) => (
+                        <li key={`details-item-${key}`}>
+                          <div>
+                            <strong>{t(item.label)}</strong>
+                          </div>
+                          <div>{t(item.value)}</div>
                         </li>
                       ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Onovo Form */}
-              <div className="onovo-form-box onovo-text-white">
-                <h5>Send Us A Message</h5>
-                <p>Feel some love, to see what we can do...t!</p>
-                <Formik
-                  initialValues={{ email: "", name: "", tel: "", message: "" }}
-                  validate={(values) => {
-                    const errors = {};
-                    if (!values.email) {
-                      errors.email = "Required";
-                    } else if (
-                      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
-                        values.email
-                      )
-                    ) {
-                      errors.email = "Invalid email address";
-                    }
-                    return errors;
-                  }}
-                  onSubmit={(values, { setSubmitting }) => {
-                    const form = document.getElementById("contactForm");
-                    const status = document.getElementById("contactFormStatus");
-                    const data = new FormData();
-
-                    data.append("name", values.name);
-                    data.append("tel", values.tel);
-                    data.append("email", values.email);
-                    data.append("message", values.message);
-
-                    fetch(form.action, {
-                      method: "POST",
-                      body: data,
-                      headers: {
-                        Accept: "application/json",
-                      },
-                    })
-                      .then((response) => {
-                        if (response.ok) {
-                          status.innerHTML = "Thanks for your submission!";
-                          form.reset();
-                        } else {
-                          response.json().then((data) => {
-                            if (Object.hasOwn(data, "errors")) {
-                              status.innerHTML = data["errors"]
-                                .map((error) => error["message"])
-                                .join(", ");
-                            } else {
-                              status.innerHTML =
-                                "Oops! There was a problem submitting your form";
-                            }
-                          });
-                        }
-                      })
-                      .catch((error) => {
-                        status.innerHTML =
-                          "Oops! There was a problem submitting your form";
-                      });
-
-                    setSubmitting(false);
-                  }}
-                >
-                  {({
-                    values,
-                    errors,
-                    touched,
-                    handleChange,
-                    handleBlur,
-                    handleSubmit,
-                    isSubmitting,
-                  }) => (
-                    <form
-                      onSubmit={handleSubmit}
-                      id="contactForm"
-                      action={appData.settings.formspreeURL}
-                      className="cform"
-                      method="post"
-                    >
-                      <div className="row">
-                        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                          <p>
-                            <input
-                              size="40"
-                              placeholder="Full Name"
-                              type="text"
-                              name="name"
-                              required="required"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={values.name}
-                            />
-                          </p>
-                        </div>
-                        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                          <p>
-                            <input
-                              size="40"
-                              placeholder="Email Address"
-                              type="email"
-                              name="email"
-                              required="required"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={values.email}
-                            />
-                          </p>
-                        </div>
-                        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                          <p>
-                            <input
-                              size="40"
-                              placeholder="Phone"
-                              type="tel"
-                              name="tel"
-                              required="required"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={values.tel}
-                            />
-                          </p>
-                        </div>
-                        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                          <p>
-                            <textarea
-                              cols="40"
-                              rows="10"
-                              placeholder="Message"
-                              name="message"
-                              required="required"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={values.message}
-                            />
-                          </p>
-                        </div>
-                        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                          <p>
-                            <button
-                              type="submit"
-                              className="onovo-btn onovo-hover-btn btn--active"
-                            >
-                              <span>Send Message</span>
-                            </button>
-                          </p>
-                        </div>
-                      </div>
-
-                      <div
-                        className="form-status alert-success"
-                        id="contactFormStatus"
-                      />
-                    </form>
+                    </>
                   )}
-                </Formik>
+
+                  <li>
+                    <div>
+                      <strong>{t("Share:")}</strong>
+                    </div>
+                    <div className="onovo-share">
+                      <div className="social-share onovo-post-socials onovo-social-2">
+                        <ul>
+                          <li>
+                            <FacebookShareButton
+                              className="onovo-social-link onovo-hover-2"
+                              url={shareUrl}
+                              quote={t(postData.title)}
+                              hashtag={"#" + postData.category}
+                            >
+                              <i className="icon fab fa-facebook" />
+                            </FacebookShareButton>
+                          </li>
+                          <li>
+                            <TwitterShareButton
+                              className="onovo-social-link onovo-hover-2"
+                              url={shareUrl}
+                              title={t(postData.title)}
+                              hashtag={"#" + postData.category}
+                            >
+                              <i className="icon fab fa-twitter"></i>
+                            </TwitterShareButton>
+                          </li>
+                          <li>
+                            <LinkedinShareButton
+                              className="onovo-social-link onovo-hover-2"
+                              url={shareUrl}
+                              title={t(postData.title)}
+                              summary={postData.type}
+                              source={shareUrl}
+                            >
+                              <i className="icon fab fa-linkedin" />
+                            </LinkedinShareButton>
+                          </li>
+                          <li>
+                            <RedditShareButton
+                              className="onovo-social-link onovo-hover-2"
+                              url={shareUrl}
+                              title={t(postData.title)}
+                            >
+                              <i className="icon fab fa-reddit" />
+                            </RedditShareButton>
+                          </li>
+                          <li>
+                            <PinterestShareButton
+                              className="onovo-social-link onovo-hover-2"
+                              url={shareUrl}
+                              media={postData.image}
+                              description={t(postData.title)}
+                            >
+                              <i className="icon fab fa-pinterest" />
+                            </PinterestShareButton>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
+
+          {gallery.items && gallery.items.length > 0 && (
+            <>
+              {/* Gallery items */}
+              <div className="row gap-row gallery-items onovo-custom-gallery">
+                {gallery.items.map((item, key) => (
+                  <div
+                    key={`gallery-item-${key}`}
+                    className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+                  >
+                    <div className="gallery-item">
+                      <a href={item.image} className="mfp-image">
+                        <img src={item.image} alt={t(item.alt)} />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {additional && (
+            <>
+              {/* Additional Description */}
+              <div className="onovo-text gap-top-80">
+                <h6 className="text-uppercase">{t(additional.heading)}</h6>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: t(additional.content),
+                  }}
+                />
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -269,7 +212,7 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
             <div className="onovo-page-navigation-content">
               {prev_id != 0 && prev_id != undefined && (
                 <Link
-                  href={`/digital-solutions/${prev_id}`}
+                  href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
                 >
                   <span className="onovo-prev onovo-hover-2">
@@ -277,15 +220,12 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
                   </span>
                 </Link>
               )}
-              <Link
-                href="/digital-solutions"
-                className="page-navigation__posts"
-              >
+              <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
               {next_id != 0 && next_id != undefined && (
                 <Link
-                  href={`/digital-solutions/${next_id}`}
+                  href={`/projects/${next_id}`}
                   className="page-navigation__next"
                 >
                   <span className="onovo-next onovo-hover-2">
@@ -297,14 +237,16 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
           </div>
         </div>
       </section>
+
+      <ImageView />
     </Layouts>
   );
 };
 
-export default ServiceDetail;
+export default ProjectDetail;
 
 export async function getStaticPaths() {
-  const paths = getAllServicesIds();
+  const paths = getAllProjectsIds();
 
   return {
     paths,
@@ -313,23 +255,23 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const serviceDetail = Data.items.find((item) => item.id === params.id);
+  const postData = await getProjectData(params.id);
+  const allProjects = await getSortedProjectsData();
 
-  // If serviceDetail is not found, return 404
-  if (!serviceDetail) {
-    return {
-      notFound: true, // This will trigger a 404 page in Next.js
-    };
-  }
-
-  const postData = await getServiceData(params.id);
-  const allServices = getSortedServicesData();
+  // Ensure missing or undefined fields are handled
+  const details = postData.details || { items: [] }; // Default to empty array if details is missing
+  const gallery = postData.gallery || { items: [] }; // Default to empty array if gallery is missing
+  const additional = postData.additional || null; // Default to null if additional is missing
 
   return {
     props: {
-      serviceDetail: serviceDetail || null, // Ensure serviceDetail is never undefined
-      postData,
-      services: allServices,
+      data: {
+        ...postData,
+        details,
+        gallery,
+        additional,
+      },
+      projects: allProjects,
     },
   };
 }

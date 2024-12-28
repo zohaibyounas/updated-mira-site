@@ -23,17 +23,12 @@ import { useTranslate } from "@/src/contexts/TranslateContext";
 const ProjectDetail = (props) => {
   const { t } = useTranslate();
 
-  const postData = props.data || {}; // Ensure postData is never undefined
-  const details = postData.details || { items: [] }; // Default to empty object if details is missing
-  const gallery = postData.gallery || { items: [] }; // Default to empty object if gallery is missing
-  const additional = postData.additional || null; // Default to null if additional is missing
-
+  const postData = props.data;
   let prev_id,
     next_id,
     prev_key,
     next_key = 0;
 
-  // Ensure postData is not undefined before accessing properties
   props.projects.forEach(function (item, key) {
     if (item.id == postData.id) {
       prev_key = key - 1;
@@ -73,7 +68,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml !== "" && (
+              {postData.contentHtml != "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -90,9 +85,9 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {details.items && details.items.length > 0 && (
+                  {typeof postData.details != "undefined" && (
                     <>
-                      {details.items.map((item, key) => (
+                      {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
                           <div>
                             <strong>{t(item.label)}</strong>
@@ -169,11 +164,11 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {gallery.items && gallery.items.length > 0 && (
+          {typeof postData.gallery != "undefined" && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
-                {gallery.items.map((item, key) => (
+                {postData.gallery.items.map((item, key) => (
                   <div
                     key={`gallery-item-${key}`}
                     className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
@@ -189,14 +184,16 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {additional && (
+          {typeof postData.additional != "undefined" && (
             <>
               {/* Description */}
               <div className="onovo-text gap-top-80">
-                <h6 className="text-uppercase">{t(additional.heading)}</h6>
+                <h6 className="text-uppercase">
+                  {t(postData.additional.heading)}
+                </h6>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: t(additional.content),
+                    __html: t(postData.additional.content),
                   }}
                 />
               </div>
@@ -243,7 +240,6 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
-
 export default ProjectDetail;
 
 export async function getStaticPaths() {
@@ -259,19 +255,9 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  // Ensure missing or undefined fields are handled
-  const details = postData.details || { items: [] };
-  const gallery = postData.gallery || { items: [] };
-  const additional = postData.additional || null;
-
   return {
     props: {
-      data: {
-        ...postData,
-        details,
-        gallery,
-        additional,
-      },
+      data: postData,
       projects: allProjects,
     },
   };
