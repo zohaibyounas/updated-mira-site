@@ -20,12 +20,13 @@ import { useTranslate } from "@/src/contexts/TranslateContext";
 const ProjectDetail = (props) => {
   const { t } = useTranslate();
 
-  const postData = props.data;
+  const postData = props.data || {}; // Safeguard for postData being null/undefined
   let prev_id,
     next_id,
     prev_key,
     next_key = 0;
 
+  // Check if projects and postData exist
   if (props.projects && postData) {
     props.projects.forEach(function (item, key) {
       if (item.id == postData.id) {
@@ -251,18 +252,19 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const postData = await getProjectData(params.id);
-  const allProjects = await getSortedProjectsData();
+  const postData = await getProjectData(params.id); // Fetch the project data
+  const allProjects = await getSortedProjectsData(); // Fetch all projects for navigation
 
+  // Ensure the data is not undefined or null
   if (!postData) {
     return {
-      notFound: true, // Return 404 if no data found
+      notFound: true, // If no data, return 404 page
     };
   }
 
   return {
     props: {
-      data: postData || null, // Safeguard to ensure data is never undefined
+      data: postData || null, // Safeguard to ensure postData is not undefined
       projects: allProjects || [], // Ensure allProjects is an array
     },
   };
