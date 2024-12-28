@@ -55,7 +55,7 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
                 </div>
               )}
 
-              {typeof postData.additional != "null" && (
+              {typeof postData.additional != "" && (
                 <>
                   {postData.additional.enabled == 1 && (
                     <div className="onovo-text gap-top-50">
