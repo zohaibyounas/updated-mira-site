@@ -22,7 +22,8 @@ import { useTranslate } from "@/src/contexts/TranslateContext";
 
 const ProjectDetail = (props) => {
   const { t } = useTranslate();
-  const postData = props.data || {}; // Ensure postData is never undefined
+
+  const postData = props.data;
   let prev_id,
     next_id,
     prev_key,
@@ -36,8 +37,12 @@ const ProjectDetail = (props) => {
   });
 
   props.projects.forEach(function (item, key) {
-    if (key == prev_key) prev_id = item.id;
-    if (key == next_key) next_id = item.id;
+    if (key == prev_key) {
+      prev_id = item.id;
+    }
+    if (key == next_key) {
+      next_id = item.id;
+    }
   });
 
   const { asPath } = useRouter();
@@ -57,36 +62,42 @@ const ProjectDetail = (props) => {
           {/* Image */}
           <div className="gap-bottom-80">
             <div className="project-image">
-              <img src={postData.image || ""} alt={t(postData.title)} />
+              <img src={postData.image} alt={t(postData.title)} />
             </div>
           </div>
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
               {postData.contentHtml && postData.contentHtml !== "" && (
-                <div className="onovo-text">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: t(postData.contentHtml),
-                    }}
-                  />
-                </div>
+                <>
+                  {/* Description */}
+                  <div className="onovo-text">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: t(postData.contentHtml),
+                      }}
+                    />
+                  </div>
+                </>
               )}
             </div>
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-4 offset-lg-1">
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {postData.details && postData.details.items
-                    ? postData.details.items.map((item, key) => (
+                  {postData.details && postData.details.items && (
+                    <>
+                      {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
                           <div>
                             <strong>{t(item.label)}</strong>
                           </div>
                           <div>{t(item.value)}</div>
                         </li>
-                      ))
-                    : null}
+                      ))}
+                    </>
+                  )}
+
                   <li>
                     <div>
                       <strong>{t("Share:")}</strong>
@@ -154,42 +165,50 @@ const ProjectDetail = (props) => {
           </div>
 
           {postData.gallery && postData.gallery.items && (
-            <div className="row gap-row gallery-items onovo-custom-gallery">
-              {postData.gallery.items.map((item, key) => (
-                <div
-                  key={`gallery-item-${key}`}
-                  className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
-                >
-                  <div className="gallery-item">
-                    <a href={item.image} className="mfp-image">
-                      <img src={item.image} alt={t(item.alt)} />
-                    </a>
+            <>
+              {/* Gallery items */}
+              <div className="row gap-row gallery-items onovo-custom-gallery">
+                {postData.gallery.items.map((item, key) => (
+                  <div
+                    key={`gallery-item-${key}`}
+                    className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+                  >
+                    <div className="gallery-item">
+                      <a href={item.image} className="mfp-image">
+                        <img src={item.image} alt={t(item.alt)} />
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
 
           {postData.additional && postData.additional.heading && (
-            <div className="onovo-text gap-top-80">
-              <h6 className="text-uppercase">
-                {t(postData.additional.heading)}
-              </h6>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: t(postData.additional.content),
-                }}
-              />
-            </div>
+            <>
+              {/* Description */}
+              <div className="onovo-text gap-top-80">
+                <h6 className="text-uppercase">
+                  {t(postData.additional.heading)}
+                </h6>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: t(postData.additional.content),
+                  }}
+                />
+              </div>
+            </>
           )}
         </div>
       </section>
 
+      {/* Onovo Navs */}
       <section className="onovo-section">
         <div className="container">
+          {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id && (
+              {prev_id && prev_id !== 0 && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -202,7 +221,7 @@ const ProjectDetail = (props) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id && (
+              {next_id && next_id !== 0 && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -221,18 +240,26 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
+export default ProjectDetail;
 
 export async function getStaticPaths() {
   const paths = getAllProjectsIds();
-  return { paths, fallback: false };
+
+  return {
+    paths,
+    fallback: false,
+  };
 }
 
 export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
+  // Check if the postData is undefined or null, and handle the case
   if (!postData) {
-    return { notFound: true }; // Avoid passing undefined values to the component
+    return {
+      notFound: true, // This will show the 404 page
+    };
   }
 
   return {
