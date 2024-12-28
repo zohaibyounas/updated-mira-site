@@ -258,7 +258,7 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  // Check if the project exists, if not return a not found message
+  // Ensure missing data is handled by setting defaults
   if (!postData) {
     return {
       props: {
@@ -268,7 +268,7 @@ export async function getStaticProps({ params }) {
     };
   }
 
-  // Handle missing data by defaulting undefined fields
+  // Handle missing objects in the postData
   postData.details = postData.details || { items: [] }; // Ensure details exist
   postData.gallery = postData.gallery || { items: [] }; // Ensure gallery exists
   postData.additional = postData.additional || null; // Set additional to null if missing
@@ -284,8 +284,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      ProjectDetail: ProjectDetail || null,
-      postData,
+      data: postData,
       projects: allProjects,
     },
   };
