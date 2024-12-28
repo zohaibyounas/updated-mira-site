@@ -33,7 +33,6 @@ const Digi_Services = (props) => {
       {/* Onovo Services */}
       <section className="onovo-section gap-top-140 gap-bottom-140">
         <div className="container">
-          {/* Heading */}
           <div className="onovo-heading gap-bottom-40">
             <div className="onovo-subtitle-1">
               <span>{t("What we do")}</span>
@@ -43,7 +42,6 @@ const Digi_Services = (props) => {
             </h2>
           </div>
 
-          {/* Services items */}
           <div className="onovo-services-list">
             {props.services.map((item, key) => (
               <div
