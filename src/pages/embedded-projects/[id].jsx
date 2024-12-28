@@ -284,7 +284,8 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      data: postData,
+      ProjectDetail: ProjectDetail || null,
+      postData,
       projects: allProjects,
     },
   };
