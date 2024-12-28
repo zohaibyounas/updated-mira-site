@@ -1,5 +1,6 @@
 import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
+import Accordion from "react-bootstrap/Accordion";
 import Link from "next/link";
 import appData from "@data/app.json";
 import { Formik } from "formik";
@@ -15,11 +16,6 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
     next_id,
     prev_key,
     next_key = 0;
-
-  // Handle missing serviceDetail case
-  if (!serviceDetail) {
-    return <div>Service not found. Please check back later.</div>;
-  }
 
   services.forEach(function (item, key) {
     if (item.id == postData.id) {
@@ -171,6 +167,7 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
                     handleBlur,
                     handleSubmit,
                     isSubmitting,
+                    /* and other goodies */
                   }) => (
                     <form
                       onSubmit={handleSubmit}
@@ -300,7 +297,6 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
     </Layouts>
   );
 };
-
 export default ServiceDetail;
 
 export async function getStaticPaths() {
@@ -315,19 +311,12 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const serviceDetail = Data.items.find((item) => item.id === params.id);
 
-  // If serviceDetail is not found, return 404
-  if (!serviceDetail) {
-    return {
-      notFound: true, // This will trigger a 404 page in Next.js
-    };
-  }
-
   const postData = await getServiceData(params.id);
   const allServices = getSortedServicesData();
 
   return {
     props: {
-      serviceDetail: serviceDetail || null, // Ensure serviceDetail is never undefined
+      serviceDetail,
       postData,
       services: allServices,
     },
