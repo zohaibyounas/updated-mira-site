@@ -30,7 +30,7 @@ const Digi_Services = (props) => {
 
       {/* <VideoSection /> */}
 
-      {/* Onovo Services */}
+      {/* Onovo Services section */}
       <section className="onovo-section gap-top-140 gap-bottom-140">
         <div className="container">
           {/* Heading */}
