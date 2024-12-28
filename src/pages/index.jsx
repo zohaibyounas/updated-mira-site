@@ -23,9 +23,12 @@ import PartnersSection from "@components/sections/Partners";
 const HeroSection = dynamic(() => import("@components/sliders/Hero2"), {
   ssr: false,
 });
-const TickerSlider = dynamic(() => import("@/src/components/sliders/DoYouKnow"), {
-  ssr: false,
-});
+const TickerSlider = dynamic(
+  () => import("@/src/components/sliders/DoYouKnow"),
+  {
+    ssr: false,
+  }
+);
 const TestimonialSlider = dynamic(
   () => import("@components/sliders/Testimonial"),
   { ssr: false }

@@ -27,14 +27,14 @@ const CallToActionSection = () => {
                 <div className="onovo-subtitle-1">
                   <span>{t(Data.subtitle)}</span>
                 </div>
-                <h2 className="onovo-title-2">
+                <h2 className="text-4xl">
                   <span dangerouslySetInnerHTML={{ __html: t(Data.title) }} />
                 </h2>
               </div>
 
               {/* Text */}
               <div
-                className="onovo-cta-text"
+                className="onovo-cta-text text-xl"
                 dangerouslySetInnerHTML={{ __html: t(Data.text) }}
               />
             </div>

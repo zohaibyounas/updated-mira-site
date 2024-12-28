@@ -13,12 +13,9 @@ const Header2 = ({ darkHeader, cartButton }) => {
     { code: "nl", label: "German" },
   ];
 
-  useEffect(
-    function () {
-      setSelectedLanguage(language);
-    },
-    [language]
-  );
+  useEffect(() => {
+    setSelectedLanguage(language);
+  }, [language]);
 
   const handleChange = (e) => {
     setSelectedLanguage(e.target.value);
@@ -26,8 +23,8 @@ const Header2 = ({ darkHeader, cartButton }) => {
   };
 
   const toggleLanguage = () => {
-    const newLanguage = translate === "en" ? "nl" : "en";
-    setTranslate(newLanguage);
+    const newLanguage = language === "en" ? "nl" : "en";
+    setSelectedLanguage(newLanguage);
     handleTranslate(newLanguage);
   };
 
@@ -36,7 +33,12 @@ const Header2 = ({ darkHeader, cartButton }) => {
   appData.header.menu.forEach((item, index) => {
     let s_class1 = "dropdown-link";
 
-    if (item.children != 0) {
+    // Remove children (submenu) for About
+    if (item.label === "About") {
+      item.children = 0; // Remove any submenus under About
+    }
+
+    if (item.children !== 0) {
       s_class1 += "menu-item-has-children";
     }
     let newobj = Object.assign({}, item, { classes: s_class1 });
@@ -81,6 +83,7 @@ const Header2 = ({ darkHeader, cartButton }) => {
       }, 600);
     }
   };
+
   const clickedMobileMenuItemParent = (e) => {
     e.preventDefault();
     e.target.parentNode.classList.toggle("opened");
@@ -123,45 +126,55 @@ const Header2 = ({ darkHeader, cartButton }) => {
                   style={{ color: "black", fontSize: "0.9rem" }}
                 >
                   <ul className="onovo-menu-nav">
-                    {navItems.map((item, key) => (
-                      <li
-                        key={`header-nav-item-${key}`}
-                        className={item.classes}
-                        style={{ color: "black" }}
-                      >
-                        <Link
-                          className={
-                            item.children ? "" : "onovo-lnk lnk--active"
-                          }
-                          onClick={
-                            item.children != 0
-                              ? (e) => clickedMobileMenuItemParent(e)
-                              : ""
-                          }
-                          href={item.link}
+                    {navItems.map((item, key) => {
+                      // If it's the "About" section, display "About Us" instead and link to the About Us page
+                      const label =
+                        item.label === "About" ? "About Us" : item.label;
+                      const link =
+                        item.label === "About" ? "/about" : item.link;
+
+                      // Remove "Team" from the navigation
+                      if (label === "Team") return null;
+
+                      return (
+                        <li
+                          key={`header-nav-item-${key}`}
+                          className={item.classes}
+                          style={{ color: "black" }}
                         >
-                          {t(item.label)}
-                        </Link>
-                        {item.children != 0 && (
-                          <i className="icon fas fa-chevron-down" />
-                        )}
-                        {item.children != 0 && (
-                          <ul className="sub-menu">
-                            {item.children.map((subitem, key) => (
-                              <li key={`header-nav-sub-item-${key}`}>
-                                <Link
-                                  className="onovo-lnk lnk--active"
-                                  // style={{ color: "white" }}
-                                  href={subitem.link}
-                                >
-                                  {t(subitem.label)}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    ))}
+                          <Link
+                            className={
+                              item.children ? "" : "onovo-lnk lnk--active"
+                            }
+                            onClick={
+                              item.children !== 0
+                                ? (e) => clickedMobileMenuItemParent(e)
+                                : ""
+                            }
+                            href={link}
+                          >
+                            {t(label)}
+                          </Link>
+                          {item.children !== 0 && (
+                            <i className="icon fas fa-chevron-down" />
+                          )}
+                          {item.children !== 0 && (
+                            <ul className="sub-menu">
+                              {item.children.map((subitem, key) => (
+                                <li key={`header-nav-sub-item-${key}`}>
+                                  <Link
+                                    className="onovo-lnk lnk--active"
+                                    href={subitem.link}
+                                  >
+                                    {t(subitem.label)}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
 
@@ -180,45 +193,55 @@ const Header2 = ({ darkHeader, cartButton }) => {
                     <div className="container">
                       <div className="onovo-menu">
                         <ul className="onovo-menu-nav">
-                          {navItems.map((item, key) => (
-                            <li
-                              key={`header-nav-item-${key}`}
-                              className={item.classes}
-                            >
-                              <Link
-                                className={
-                                  item.children
-                                    ? "onovo-lnk lnk--active onovo-dropdown-toggle"
-                                    : "onovo-lnk lnk--active"
-                                }
-                                onClick={
-                                  item.children != 0
-                                    ? (e) => clickedMobileMenuItemParent(e)
-                                    : ""
-                                }
-                                href={item.link}
+                          {navItems.map((item, key) => {
+                            const label =
+                              item.label === "About" ? "About Us" : item.label;
+                            const link =
+                              item.label === "About" ? "/about" : item.link;
+
+                            // Remove "Team" from the navigation
+                            if (label === "Team") return null;
+
+                            return (
+                              <li
+                                key={`header-nav-item-${key}`}
+                                className={item.classes}
                               >
-                                {t(item.label)}
-                              </Link>
-                              {item.children != 0 && (
-                                <i className="icon fas fa-chevron-down" />
-                              )}
-                              {item.children != 0 && (
-                                <ul className="sub-menu">
-                                  {item.children.map((subitem, key) => (
-                                    <li key={`header-nav-sub-item-${key}`}>
-                                      <Link
-                                        className="onovo-lnk lnk--active"
-                                        href={subitem.link}
-                                      >
-                                        {t(subitem.label)}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </li>
-                          ))}
+                                <Link
+                                  className={
+                                    item.children
+                                      ? "onovo-lnk lnk--active onovo-dropdown-toggle"
+                                      : "onovo-lnk lnk--active"
+                                  }
+                                  onClick={
+                                    item.children !== 0
+                                      ? (e) => clickedMobileMenuItemParent(e)
+                                      : ""
+                                  }
+                                  href={link}
+                                >
+                                  {t(label)}
+                                </Link>
+                                {item.children !== 0 && (
+                                  <i className="icon fas fa-chevron-down" />
+                                )}
+                                {item.children !== 0 && (
+                                  <ul className="sub-menu">
+                                    {item.children.map((subitem, key) => (
+                                      <li key={`header-nav-sub-item-${key}`}>
+                                        <Link
+                                          className="onovo-lnk lnk--active"
+                                          href={subitem.link}
+                                        >
+                                          {t(subitem.label)}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     </div>
@@ -252,4 +275,5 @@ const Header2 = ({ darkHeader, cartButton }) => {
     </>
   );
 };
+
 export default Header2;

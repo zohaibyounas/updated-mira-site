@@ -20,7 +20,7 @@ const AboutSection = () => {
                     </div>
                     <h2 className="onovo-title-2 ">
                       <span
-                        className="about-title"
+                        className="about-title text-2xl"
                         dangerouslySetInnerHTML={{ __html: t(Data.title) }}
                       />
                     </h2>

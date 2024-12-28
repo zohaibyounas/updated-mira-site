@@ -56,9 +56,9 @@ const About = (props) => {
                   <span> {t("Welcome to Mira Elektronikentwicklung")} </span>
                 </div>
                 <h2 className="onovo-title-2">
-                  <span>
+                  <span className="text-4xl">
                     {t("We are a cutting-edge")} <br />
-                    {t("software provider,")} <br />
+                    {t("software services provider,")} <br />
                     {t("dedicated to developing")} <br />
                     {t("innovative solutions")} <br />
                   </span>
@@ -173,7 +173,7 @@ const About = (props) => {
           {/* Description */}
           <div className="row gap-top-100">
             <div className="col-xs-12 col-sm-12 col-md-4 col-lg-3">
-              <h5 className="text-uppercase">{t("Our Mission")}</h5>
+              <h5 className="text-uppercase">{t("Our Goal")}</h5>
             </div>
             <div className="col-xs-12 col-sm-12 col-md-8 col-lg-9">
               {t(

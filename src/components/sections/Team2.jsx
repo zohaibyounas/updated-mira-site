@@ -8,22 +8,28 @@ const Team2Section = ({ team }) => {
   return (
     <>
       {/* Onovo Team */}
-      <section className="onovo-section gap-top-140 gap-bottom-140">
+      <section className="onovo-section  ">
         <div className="container">
           {/* Team items */}
-          <div className="row gap-row align-center">
-            {/* Heading */}
-            <div className="col-xs-12 col-sm-12 col-md-11 col-lg-5">
-              <div className="onovo-heading align-left">
-                <div className="onovo-subtitle-1">
-                  <span>{t(Data.subtitle)}</span>
-                </div>
-                <h2 className="onovo-title-2">
-                  <span dangerouslySetInnerHTML={{ __html: t(Data.title) }} />
-                </h2>
+          <div className=" text-center">
+            <div className="">
+              <div className="text-4xl font-semibold mb-4">
+                <span>{t("Meet Our Company Family")}</span>
               </div>
+              <h2 className="text-3xl font-bold mb-4">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: t("Our Team is The Difference."),
+                  }}
+                />
+              </h2>
+              <h3 className="text-2xl font-light mb-12">
+                <span>{t("Our Chemistry is The Spark.")}</span>
+              </h3>
             </div>
+          </div>
 
+          <div className="row gap-row align-center">
             {/* team items */}
             <div className="col-xs-12 col-sm-12 col-md-1 col-lg-1"></div>
 
@@ -32,10 +38,10 @@ const Team2Section = ({ team }) => {
                 key={`team2-item-${key}`}
                 className="col-xs-12 col-sm-12 col-md-6 col-lg-3"
               >
-                <div className="onovo-team-two">
+                <div className="onovo-team-two ">
                   <div className="onovo-team-two-item">
                     <div
-                      className="image onovo-hover-3 onovo-hover-black-30"
+                      className="image onovo-hover-3 onovo-hover-black-30 "
                       data-onovo-overlay
                       data-onovo-scroll
                     >
