@@ -258,7 +258,7 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
-  // Add "Internet-of-Things" and remove deleted services
+  // Check if the project exists, if not return a not found message
   if (!postData) {
     return {
       props: {
@@ -268,19 +268,13 @@ export async function getStaticProps({ params }) {
     };
   }
 
-  // Adding the "Internet-of-Things" object
-  const newService = {
-    id: "Internet-of-Things",
-    image: "/assets/images/service/cloud.png",
-    title: "Internet of Things",
-    text: "IoT connects devices and systems, enabling seamless data exchange. It helps businesses optimize operations, make data-driven decisions, and drive innovation.",
-    link: "service-details",
-  };
+  // Handle missing data by defaulting undefined fields
+  postData.details = postData.details || { items: [] }; // Ensure details exist
+  postData.gallery = postData.gallery || { items: [] }; // Ensure gallery exists
+  postData.additional = postData.additional || null; // Set additional to null if missing
 
+  // Filter out deleted services from the items list
   postData.items = postData.items || [];
-  postData.items.push(newService);
-
-  // Filter out deleted services
   postData.items = postData.items.filter(
     (item) =>
       item.id !== "mobile-app-development" &&
