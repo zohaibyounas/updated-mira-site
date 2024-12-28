@@ -19,28 +19,28 @@ import {
 } from "react-share";
 import { useTranslate } from "@/src/contexts/TranslateContext";
 
-const ProjectDetail = ({ data, projects }) => {
+const ProjectDetail = (props) => {
   const { t } = useTranslate();
 
-  const postData = data || {}; // Default empty object if postData is missing
+  const postData = props.data;
   let prev_id,
     next_id,
     prev_key,
     next_key = 0;
 
-  if (projects && postData.id) {
-    projects.forEach(function (item, key) {
+  if (props.projects) {
+    props.projects.forEach(function (item, key) {
       if (item.id == postData.id) {
         prev_key = key - 1;
         next_key = key + 1;
       }
     });
 
-    projects.forEach(function (item, key) {
-      if (key === prev_key) {
+    props.projects.forEach(function (item, key) {
+      if (key == prev_key) {
         prev_id = item.id;
       }
-      if (key === next_key) {
+      if (key == next_key) {
         next_id = item.id;
       }
     });
@@ -69,7 +69,7 @@ const ProjectDetail = ({ data, projects }) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml && postData.contentHtml !== "" && (
+              {postData.contentHtml && (
                 <div className="onovo-text">
                   <div
                     dangerouslySetInnerHTML={{
@@ -105,7 +105,7 @@ const ProjectDetail = ({ data, projects }) => {
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
                               quote={t(postData.title)}
-                              hashtag={`#${postData.category || ""}`}
+                              hashtag={"#" + postData.category}
                             >
                               <i className="icon fab fa-facebook" />
                             </FacebookShareButton>
@@ -115,7 +115,7 @@ const ProjectDetail = ({ data, projects }) => {
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
                               title={t(postData.title)}
-                              hashtag={`#${postData.category || ""}`}
+                              hashtag={"#" + postData.category}
                             >
                               <i className="icon fab fa-twitter"></i>
                             </TwitterShareButton>
@@ -240,20 +240,19 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  // Ensure that the fetched data is properly handled
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
   if (!postData) {
     return {
-      notFound: true, // If no postData is found, return a 404 page
+      notFound: true, // Return a 404 page if the project data is not found
     };
   }
 
   return {
     props: {
-      data: postData || null, // Ensure postData is never undefined
-      projects: allProjects || [], // Ensure allProjects is an empty array if undefined
+      data: postData || null, // Ensure the postData is either the data or null
+      projects: allProjects || [], // Ensure the projects is an array, even if empty
     },
   };
 }
