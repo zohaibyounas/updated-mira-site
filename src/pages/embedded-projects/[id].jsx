@@ -2,15 +2,12 @@ import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
 import Link from "next/link";
 import ImageView from "@components/ImageView";
-
 import { useRouter } from "next/router";
-
 import {
   getSortedProjectsData,
   getAllProjectsIds,
   getProjectData,
 } from "@/src/lib/embedded-projects";
-
 import {
   FacebookShareButton,
   LinkedinShareButton,
@@ -29,21 +26,23 @@ const ProjectDetail = (props) => {
     prev_key,
     next_key = 0;
 
-  props.projects.forEach(function (item, key) {
-    if (item.id == postData.id) {
-      prev_key = key - 1;
-      next_key = key + 1;
-    }
-  });
+  if (props.projects && postData) {
+    props.projects.forEach(function (item, key) {
+      if (item.id == postData.id) {
+        prev_key = key - 1;
+        next_key = key + 1;
+      }
+    });
 
-  props.projects.forEach(function (item, key) {
-    if (key == prev_key) {
-      prev_id = item.id;
-    }
-    if (key == next_key) {
-      next_id = item.id;
-    }
-  });
+    props.projects.forEach(function (item, key) {
+      if (key == prev_key) {
+        prev_id = item.id;
+      }
+      if (key == next_key) {
+        next_id = item.id;
+      }
+    });
+  }
 
   const { asPath } = useRouter();
   const origin =
@@ -68,7 +67,7 @@ const ProjectDetail = (props) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml != "" && (
+              {postData.contentHtml && postData.contentHtml !== "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -85,7 +84,7 @@ const ProjectDetail = (props) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {typeof postData.details != "undefined" && (
+                  {postData.details && postData.details.items && (
                     <>
                       {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
@@ -97,7 +96,6 @@ const ProjectDetail = (props) => {
                       ))}
                     </>
                   )}
-
                   <li>
                     <div>
                       <strong>{t("Share:")}</strong>
@@ -164,7 +162,7 @@ const ProjectDetail = (props) => {
             </div>
           </div>
 
-          {typeof postData.gallery != "undefined" && (
+          {postData.gallery && postData.gallery.items && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -184,9 +182,9 @@ const ProjectDetail = (props) => {
             </>
           )}
 
-          {typeof postData.additional != "undefined" && (
+          {postData.additional && postData.additional.content && (
             <>
-              {/* Description */}
+              {/* Additional Description */}
               <div className="onovo-text gap-top-80">
                 <h6 className="text-uppercase">
                   {t(postData.additional.heading)}
@@ -208,7 +206,7 @@ const ProjectDetail = (props) => {
           {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id != 0 && prev_id != undefined && (
+              {prev_id && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -221,7 +219,7 @@ const ProjectDetail = (props) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id != 0 && next_id != undefined && (
+              {next_id && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -240,6 +238,7 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
+
 export default ProjectDetail;
 
 export async function getStaticPaths() {
@@ -255,10 +254,16 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
+  if (!postData) {
+    return {
+      notFound: true, // Return 404 if no data found
+    };
+  }
+
   return {
     props: {
-      data: postData,
-      projects: allProjects,
+      data: postData || null, // Safeguard to ensure data is never undefined
+      projects: allProjects || [], // Ensure allProjects is an array
     },
   };
 }
