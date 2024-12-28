@@ -23,47 +23,43 @@ const ServicesSection = ({ paddingtop = false }) => {
         <div className="container-xl">
           {/* Services items */}
           <div className="row onovo-services-grid-fw">
-            {Data.items && Data.items.length > 0 ? (
-              Data.items.map((item, key) => (
-                <div
-                  key={`services-item-${key}`}
-                  className="col-xs-12 col-sm-12 col-md-6 col-lg-6 align-center"
-                >
-                  <Link href={`/embedded-solutions/${item.id}`}>
-                    <div
-                      className={
-                        key === 1
-                          ? "onovo-service-grid-item onovo-hover-1 active active--default"
-                          : "onovo-service-grid-item onovo-hover-1"
-                      }
-                    >
-                      <div className="image justify-items-center">
-                        <img
-                          decoding="async"
-                          src={item.image}
-                          alt={t(item.title)}
-                        />
-                      </div>
-                      <h5 className="onovo-title-3">
-                        <span>{t(item.title)}</span>
-                      </h5>
-                      <div className="onovo-text">
-                        <div>
-                          <p className="text-service">{t(item.text)}</p>
-                        </div>
-                      </div>
-                      <div className="onovo-bubble">
-                        <div className="bubble-1" />
-                        <div className="bubble-2" />
-                        <div className="bubble-3" />
+            {Data.items.map((item, key) => (
+              <div
+                key={`services-item-${key}`}
+                className="col-xs-12 col-sm-12 col-md-6 col-lg-6 align-center"
+              >
+                <Link href={`/embedded-solutions/${item.id}`}>
+                  <div
+                    className={
+                      key == 1
+                        ? "onovo-service-grid-item onovo-hover-1 active active--default"
+                        : "onovo-service-grid-item onovo-hover-1"
+                    }
+                  >
+                    <div className="image justify-items-center">
+                      <img
+                        decoding="async"
+                        src={item.image}
+                        alt={t(item.title)}
+                      />
+                    </div>
+                    <h5 className="onovo-title-3">
+                      <span>{t(item.title)}</span>
+                    </h5>
+                    <div className="onovo-text">
+                      <div>
+                        <p className="text-service">{t(item.text)}</p>
                       </div>
                     </div>
-                  </Link>
-                </div>
-              ))
-            ) : (
-              <p>No services available.</p>
-            )}
+                    <div className="onovo-bubble">
+                      <div className="bubble-1" />
+                      <div className="bubble-2" />
+                      <div className="bubble-3" />
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>
