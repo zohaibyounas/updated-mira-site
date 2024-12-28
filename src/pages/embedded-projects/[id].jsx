@@ -29,10 +29,6 @@ const ProjectDetail = (props) => {
     prev_key,
     next_key = 0;
 
-  if (!serviceDetail) {
-    return <div>Service not found. Please check back later.</div>;
-  }
-
   props.projects.forEach(function (item, key) {
     if (item.id == postData.id) {
       prev_key = key - 1;
@@ -244,6 +240,7 @@ const ProjectDetail = (props) => {
     </Layouts>
   );
 };
+
 export default ProjectDetail;
 
 export async function getStaticPaths() {
@@ -256,8 +253,19 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const postData = await getProjectData(params.id);
-  const allProjects = await getSortedProjectsData();
+  const postData = await getProjectData(params.id); // Fetch the project data
+
+  // Check if the serviceDetail exists
+  const serviceDetail = postData ? postData : null; // If no data is found, set serviceDetail to null
+
+  // If no serviceDetail is found, handle it gracefully
+  if (!serviceDetail) {
+    return {
+      notFound: true, // Trigger Next.js 404 page
+    };
+  }
+
+  const allProjects = await getSortedProjectsData(); // Fetch all projects for navigation
 
   return {
     props: {
