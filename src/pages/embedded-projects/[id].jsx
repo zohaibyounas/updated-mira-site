@@ -255,11 +255,17 @@ export async function getStaticProps({ params }) {
   const postData = await getProjectData(params.id);
   const allProjects = await getSortedProjectsData();
 
+  // Handle undefined values
+  if (postData) {
+    postData.details = postData.details || null; // Ensure details is never undefined
+    postData.gallery = postData.gallery || null; // Ensure gallery is never undefined
+    postData.additional = postData.additional || null; // Ensure additional info is never undefined
+  }
+
   return {
     props: {
-      ProjectDetail: ProjectDetail || null,
-      postData,
-      projects: allProjects,
+      postData: postData || null, // Handle undefined postData
+      projects: allProjects || [], // Ensure projects is an array
     },
   };
 }
