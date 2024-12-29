@@ -257,7 +257,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const projectDetail = Data.items.find((item) => item.id === params.id);
   //const allProjects = await getSortedProjectsData();
-  if (!projectDetailDetail) {
+  if (!projectDetail) {
     return {
       notFound: true, // This will trigger a 404 page in Next.js
     };
