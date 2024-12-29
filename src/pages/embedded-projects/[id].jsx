@@ -253,7 +253,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   // Fetch the data from your source (e.g., embedded-services.json or API)
-  const postData = await getProjectData(params.id); // assuming this is the method to fetch postData
+  let postData = await getProjectData(params.id); // assuming this is the method to fetch postData
   const allProjects = await getSortedProjectsData(); // assuming this is the method to fetch projects
 
   // Ensure that if serviceDetail or any other field is undefined, it's replaced with null or an empty object/array
