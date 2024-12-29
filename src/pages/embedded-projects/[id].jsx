@@ -256,27 +256,39 @@ export async function getStaticProps({ params }) {
   let postData = await getProjectData(params.id); // use let instead of const
   let allProjects = await getSortedProjectsData(); // use let instead of const
 
-  // Ensure that if serviceDetail or any other field is undefined, it's replaced with null or an empty object/array
+  // Ensure that undefined fields like serviceDetail are replaced with null or omitted
   if (postData) {
-    // Sanitize the postData to replace undefined fields with null or an empty value
-    postData.serviceDetail = postData.serviceDetail || null; // Replace undefined with null if serviceDetail is missing
-    postData.details = postData.details || {}; // Make sure details is never undefined
-    postData.details.items = postData.details.items || []; // Ensure items is always an array
-    postData.gallery = postData.gallery || {}; // Ensure gallery exists
-    postData.gallery.items = postData.gallery.items || []; // Ensure items in gallery is an array
-    postData.additional = postData.additional || {}; // Ensure additional content exists
-    postData.additional.content = postData.additional.content || ""; // Ensure content is an empty string if missing
+    // Sanitize postData to replace undefined fields with null or default values
+    postData = sanitizeData(postData); // Clean up the postData before returning
+
+    // Ensure that the fields are not undefined before rendering
+    postData.serviceDetail = postData.serviceDetail || null;
+    postData.details = postData.details || {};
+    postData.details.items = postData.details.items || [];
+    postData.gallery = postData.gallery || {};
+    postData.gallery.items = postData.gallery.items || [];
+    postData.additional = postData.additional || {};
+    postData.additional.content = postData.additional.content || "";
   }
 
-  // Handle allProjects the same way if necessary
-  if (allProjects) {
-    allProjects = allProjects || []; // Ensure allProjects is an array
-  }
+  // Ensure allProjects is an array (handle empty or undefined)
+  allProjects = allProjects || [];
 
   return {
     props: {
-      data: postData || null, // Return null if postData doesn't exist
-      projects: allProjects || [], // Return empty array if allProjects is missing
+      data: postData || null, // If postData is missing, return null
+      projects: allProjects, // If allProjects is missing, return an empty array
     },
   };
+}
+
+// Helper function to sanitize data and remove undefined fields
+function sanitizeData(data) {
+  // Go through all fields and replace undefined with null or an empty object
+  for (let key in data) {
+    if (data[key] === undefined) {
+      data[key] = null; // You can also replace it with {} or [] if appropriate
+    }
+  }
+  return data;
 }
