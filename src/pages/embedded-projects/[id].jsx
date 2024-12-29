@@ -71,7 +71,7 @@ const ProjectDetail = ({ projectDetail, postData, projects }) => {
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {postData.contentHtml != "" && (
+              {postData.contentHtml !== "" && (
                 <>
                   {/* Description */}
                   <div className="onovo-text">
@@ -88,7 +88,7 @@ const ProjectDetail = ({ projectDetail, postData, projects }) => {
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {typeof postData.details != "undefined" && (
+                  {postData.details && postData.details.items && (
                     <>
                       {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
@@ -167,7 +167,7 @@ const ProjectDetail = ({ projectDetail, postData, projects }) => {
             </div>
           </div>
 
-          {typeof postData.gallery != "undefined" && (
+          {postData.gallery && postData.gallery.items && (
             <>
               {/* Gallery items */}
               <div className="row gap-row gallery-items onovo-custom-gallery">
@@ -187,7 +187,7 @@ const ProjectDetail = ({ projectDetail, postData, projects }) => {
             </>
           )}
 
-          {typeof postData.additional != "undefined" && (
+          {postData.additional && postData.additional.content && (
             <>
               {/* Description */}
               <div className="onovo-text gap-top-80">
@@ -256,19 +256,21 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const projectDetail = Data.items.find((item) => item.id === params.id);
+
   if (!projectDetail) {
     return {
       notFound: true, // This will trigger a 404 page in Next.js
     };
   }
+
   const postData = await getProjectData(params.id);
   const allProjects = getSortedProjectsData();
 
   return {
     props: {
       projectDetail: projectDetail || null, // Ensure it is either an object or null, not undefined
-      postData,
-      projects: allProjects,
+      postData: postData || null, // Ensure postData is not undefined
+      projects: allProjects || [], // Ensure projects is not undefined
     },
   };
 }
