@@ -65,7 +65,10 @@ const ProjectDetail = ({ data, projects }) => {
           {/* Image */}
           <div className="gap-bottom-80">
             <div className="project-image">
-              <img src={data.image} alt={t(data.title)} />
+              <img
+                src={data.image || "/default-image.jpg"}
+                alt={t(data.title)}
+              />
             </div>
           </div>
 
@@ -172,7 +175,10 @@ const ProjectDetail = ({ data, projects }) => {
                 >
                   <div className="gallery-item">
                     <a href={item.image} className="mfp-image">
-                      <img src={item.image} alt={t(item.alt)} />
+                      <img
+                        src={item.image || "/default-image.jpg"}
+                        alt={t(item.alt)}
+                      />
                     </a>
                   </div>
                 </div>
@@ -247,8 +253,8 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      data: postData || null, // Ensure data is not undefined
-      projects: allProjects || [], // Ensure projects is not undefined
+      data: postData || null, // Ensure that postData is either an object or null
+      projects: allProjects || [], // Ensure projects is either an array or empty
     },
   };
 }
