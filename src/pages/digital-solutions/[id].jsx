@@ -1,14 +1,13 @@
 import Layouts from "@layouts/Layouts";
 import PageBanner from "@components/PageBanner";
 import Link from "next/link";
-import ImageView from "@components/ImageView";
-
-import { useRouter } from "next/router";
-
+import appData from "@data/app.json";
+import { Formik } from "formik";
+import Data from "@data/sections/digital-services.json";
 import {
-  getSortedServicesData,
   getAllServicesIds,
   getServiceData,
+  getSortedServicesData,
 } from "@/src/lib/digital-services";
 
 const ServiceDetail = ({ serviceDetail, postData, services }) => {
@@ -90,7 +89,7 @@ const ServiceDetail = ({ serviceDetail, postData, services }) => {
                         <li key={`services-item-${key}`}>
                           <Link
                             className="onovo-lnk"
-                            href={`/services/${item.id}`} // Correct template literal
+                            href={`/services/${item.id}`}
                           >
                             <span data-splitting data-onovo-scroll>
                               {item.title}
