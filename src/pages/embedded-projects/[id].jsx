@@ -252,43 +252,13 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  // Fetch the data from your source (e.g., embedded-services.json or API)
-  let postData = await getProjectData(params.id); // use let instead of const
-  let allProjects = await getSortedProjectsData(); // use let instead of const
-
-  // Ensure that undefined fields like serviceDetail are replaced with null or omitted
-  if (postData) {
-    // Sanitize postData to replace undefined fields with null or default values
-    postData = sanitizeData(postData); // Clean up the postData before returning
-
-    // Ensure that the fields are not undefined before rendering
-    postData.serviceDetail = postData.serviceDetail || null;
-    postData.details = postData.details || {};
-    postData.details.items = postData.details.items || [];
-    postData.gallery = postData.gallery || {};
-    postData.gallery.items = postData.gallery.items || [];
-    postData.additional = postData.additional || {};
-    postData.additional.content = postData.additional.content || "";
-  }
-
-  // Ensure allProjects is an array (handle empty or undefined)
-  allProjects = allProjects || [];
+  const postData = await getProjectData(params.id);
+  const allProjects = await getSortedProjectsData();
 
   return {
     props: {
-      data: postData || null, // If postData is missing, return null
-      projects: allProjects, // If allProjects is missing, return an empty array
+      data: postData,
+      projects: allProjects,
     },
   };
-}
-
-// Helper function to sanitize data and remove undefined fields
-function sanitizeData(data) {
-  // Go through all fields and replace undefined with null or an empty object
-  for (let key in data) {
-    if (data[key] === undefined) {
-      data[key] = null; // You can also replace it with {} or [] if appropriate
-    }
-  }
-  return data;
 }
