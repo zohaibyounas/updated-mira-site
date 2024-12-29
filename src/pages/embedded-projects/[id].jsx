@@ -20,30 +20,27 @@ import {
 } from "react-share";
 import { useTranslate } from "@/src/contexts/TranslateContext";
 
-const ProjectDetail = ({ data, projects }) => {
+const ProjectDetail = (props) => {
   const { t } = useTranslate();
 
-  if (!data) {
-    return <div>iot not found. Please check back later.</div>;
-  }
-
+  const postData = props.data;
   let prev_id,
     next_id,
     prev_key,
     next_key = 0;
 
-  projects.forEach((item, key) => {
-    if (item.id === data.id) {
+  props.projects.forEach(function (item, key) {
+    if (item.id == postData.id) {
       prev_key = key - 1;
       next_key = key + 1;
     }
   });
 
-  projects.forEach((item, key) => {
-    if (key === prev_key) {
+  props.projects.forEach(function (item, key) {
+    if (key == prev_key) {
       prev_id = item.id;
     }
-    if (key === next_key) {
+    if (key == next_key) {
       next_id = item.id;
     }
   });
@@ -57,7 +54,7 @@ const ProjectDetail = ({ data, projects }) => {
 
   return (
     <Layouts header={2} footer={2} darkHeader>
-      <PageBanner pageTitle={t(data.title)} pageDesc={t(data.type)} />
+      <PageBanner pageTitle={t(postData.title)} pageDesc={t(postData.type)} />
 
       {/* Onovo Project Detail */}
       <section className="onovo-section gap-top-140">
@@ -65,32 +62,32 @@ const ProjectDetail = ({ data, projects }) => {
           {/* Image */}
           <div className="gap-bottom-80">
             <div className="project-image">
-              <img
-                src={data.image || "/default-image.jpg"}
-                alt={t(data.title)}
-              />
+              <img src={postData.image} alt={t(postData.title)} />
             </div>
           </div>
 
           <div className="row gap-bottom-80">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-              {data.contentHtml && (
-                <div className="onovo-text">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: t(data.contentHtml),
-                    }}
-                  />
-                </div>
+              {postData.contentHtml != "" && (
+                <>
+                  {/* Description */}
+                  <div className="onovo-text">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: t(postData.contentHtml),
+                      }}
+                    />
+                  </div>
+                </>
               )}
             </div>
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-4 offset-lg-1">
               {/* Project Info */}
               <div className="onovo-project-info onovo-text-white text-uppercase">
                 <ul>
-                  {data.details && data.details.items && (
+                  {typeof postData.details != "undefined" && (
                     <>
-                      {data.details.items.map((item, key) => (
+                      {postData.details.items.map((item, key) => (
                         <li key={`details-item-${key}`}>
                           <div>
                             <strong>{t(item.label)}</strong>
@@ -100,6 +97,7 @@ const ProjectDetail = ({ data, projects }) => {
                       ))}
                     </>
                   )}
+
                   <li>
                     <div>
                       <strong>{t("Share:")}</strong>
@@ -111,8 +109,8 @@ const ProjectDetail = ({ data, projects }) => {
                             <FacebookShareButton
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
-                              quote={t(data.title)}
-                              hashtag={"#" + data.category}
+                              quote={t(postData.title)}
+                              hashtag={"#" + postData.category}
                             >
                               <i className="icon fab fa-facebook" />
                             </FacebookShareButton>
@@ -121,8 +119,8 @@ const ProjectDetail = ({ data, projects }) => {
                             <TwitterShareButton
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
-                              title={t(data.title)}
-                              hashtag={"#" + data.category}
+                              title={t(postData.title)}
+                              hashtag={"#" + postData.category}
                             >
                               <i className="icon fab fa-twitter"></i>
                             </TwitterShareButton>
@@ -131,8 +129,8 @@ const ProjectDetail = ({ data, projects }) => {
                             <LinkedinShareButton
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
-                              title={t(data.title)}
-                              summary={data.type}
+                              title={t(postData.title)}
+                              summary={postData.type}
                               source={shareUrl}
                             >
                               <i className="icon fab fa-linkedin" />
@@ -142,7 +140,7 @@ const ProjectDetail = ({ data, projects }) => {
                             <RedditShareButton
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
-                              title={t(data.title)}
+                              title={t(postData.title)}
                             >
                               <i className="icon fab fa-reddit" />
                             </RedditShareButton>
@@ -151,8 +149,8 @@ const ProjectDetail = ({ data, projects }) => {
                             <PinterestShareButton
                               className="onovo-social-link onovo-hover-2"
                               url={shareUrl}
-                              media={data.image}
-                              description={t(data.title)}
+                              media={postData.image}
+                              description={t(postData.title)}
                             >
                               <i className="icon fab fa-pinterest" />
                             </PinterestShareButton>
@@ -166,35 +164,40 @@ const ProjectDetail = ({ data, projects }) => {
             </div>
           </div>
 
-          {data.gallery && data.gallery.items && (
-            <div className="row gap-row gallery-items onovo-custom-gallery">
-              {data.gallery.items.map((item, key) => (
-                <div
-                  key={`gallery-item-${key}`}
-                  className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
-                >
-                  <div className="gallery-item">
-                    <a href={item.image} className="mfp-image">
-                      <img
-                        src={item.image || "/default-image.jpg"}
-                        alt={t(item.alt)}
-                      />
-                    </a>
+          {typeof postData.gallery != "undefined" && (
+            <>
+              {/* Gallery items */}
+              <div className="row gap-row gallery-items onovo-custom-gallery">
+                {postData.gallery.items.map((item, key) => (
+                  <div
+                    key={`gallery-item-${key}`}
+                    className="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+                  >
+                    <div className="gallery-item">
+                      <a href={item.image} className="mfp-image">
+                        <img src={item.image} alt={t(item.alt)} />
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
 
-          {data.additional && data.additional.content && (
-            <div className="onovo-text gap-top-80">
-              <h6 className="text-uppercase">{t(data.additional.heading)}</h6>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: t(data.additional.content),
-                }}
-              />
-            </div>
+          {typeof postData.additional != "undefined" && (
+            <>
+              {/* Description */}
+              <div className="onovo-text gap-top-80">
+                <h6 className="text-uppercase">
+                  {t(postData.additional.heading)}
+                </h6>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: t(postData.additional.content),
+                  }}
+                />
+              </div>
+            </>
           )}
         </div>
       </section>
@@ -202,9 +205,10 @@ const ProjectDetail = ({ data, projects }) => {
       {/* Onovo Navs */}
       <section className="onovo-section">
         <div className="container">
+          {/* Navigation */}
           <div className="onovo-page-navigation">
             <div className="onovo-page-navigation-content">
-              {prev_id && (
+              {prev_id != 0 && prev_id != undefined && (
                 <Link
                   href={`/projects/${prev_id}`}
                   className="page-navigation__prev"
@@ -217,7 +221,7 @@ const ProjectDetail = ({ data, projects }) => {
               <Link href="/projects" className="page-navigation__posts">
                 <i className="fas fa-th" />
               </Link>
-              {next_id && (
+              {next_id != 0 && next_id != undefined && (
                 <Link
                   href={`/projects/${next_id}`}
                   className="page-navigation__next"
@@ -236,11 +240,11 @@ const ProjectDetail = ({ data, projects }) => {
     </Layouts>
   );
 };
-
 export default ProjectDetail;
 
 export async function getStaticPaths() {
   const paths = getAllProjectsIds();
+
   return {
     paths,
     fallback: false,
@@ -248,13 +252,31 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const postData = await getProjectData(params.id);
-  const allProjects = await getSortedProjectsData();
+  // Fetch the data from your source (e.g., embedded-services.json or API)
+  const postData = await getProjectData(params.id); // assuming this is the method to fetch postData
+  const allProjects = await getSortedProjectsData(); // assuming this is the method to fetch projects
+
+  // Ensure that if serviceDetail or any other field is undefined, it's replaced with null or an empty object/array
+  if (postData) {
+    // Sanitize the postData to replace undefined fields with null or an empty value
+    postData.serviceDetail = postData.serviceDetail || null; // Replace undefined with null if serviceDetail is missing
+    postData.details = postData.details || {}; // Make sure details is never undefined
+    postData.details.items = postData.details.items || []; // Ensure items is always an array
+    postData.gallery = postData.gallery || {}; // Ensure gallery exists
+    postData.gallery.items = postData.gallery.items || []; // Ensure items in gallery is an array
+    postData.additional = postData.additional || {}; // Ensure additional content exists
+    postData.additional.content = postData.additional.content || ""; // Ensure content is an empty string if missing
+  }
+
+  // Handle allProjects the same way if necessary
+  if (allProjects) {
+    allProjects = allProjects || []; // Ensure allProjects is an array
+  }
 
   return {
     props: {
-      data: postData || null, // Ensure that postData is either an object or null
-      projects: allProjects || [], // Ensure projects is either an array or empty
+      data: postData || null, // Return null if postData doesn't exist
+      projects: allProjects || [], // Return empty array if allProjects is missing
     },
   };
 }
