@@ -23,14 +23,14 @@ import { useTranslate } from "@/src/contexts/TranslateContext";
 const ProjectDetail = (projectDetail, postData, projects) => {
   const { t } = useTranslate();
 
-  const postData = props.data;
+  // const postData = props.data;
   let prev_id,
     next_id,
     prev_key,
     next_key = 0;
 
   if (!projectDetail) {
-    return <div>Service not found. Please check back later.</div>;
+    return <div>iot not found. Please check back later.</div>;
   }
   projects.forEach(function (item, key) {
     if (item.id == postData.id) {
