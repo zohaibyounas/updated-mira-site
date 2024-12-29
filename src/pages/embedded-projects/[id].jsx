@@ -20,7 +20,7 @@ import {
 } from "react-share";
 import { useTranslate } from "@/src/contexts/TranslateContext";
 
-const ProjectDetail = (props) => {
+const ProjectDetail = (projectDetail, postData, projects) => {
   const { t } = useTranslate();
 
   const postData = props.data;
@@ -29,14 +29,17 @@ const ProjectDetail = (props) => {
     prev_key,
     next_key = 0;
 
-  props.projects.forEach(function (item, key) {
+  if (!projectsDetailDetail) {
+    return <div>Service not found. Please check back later.</div>;
+  }
+  projects.forEach(function (item, key) {
     if (item.id == postData.id) {
       prev_key = key - 1;
       next_key = key + 1;
     }
   });
 
-  props.projects.forEach(function (item, key) {
+  projects.forEach(function (item, key) {
     if (key == prev_key) {
       prev_id = item.id;
     }
@@ -252,12 +255,20 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
+  const projectDetail = Data.items.find((item) => item.id === params.id);
+  //const allProjects = await getSortedProjectsData();
+  if (!projectDetailDetail) {
+    return {
+      notFound: true, // This will trigger a 404 page in Next.js
+    };
+  }
   const postData = await getProjectData(params.id);
-  const allProjects = await getSortedProjectsData();
+  const allProjects = getSortedProjectsData();
 
   return {
     props: {
-      data: postData,
+      projectDetail: projectDetail || null,
+      postData,
       projects: allProjects,
     },
   };
