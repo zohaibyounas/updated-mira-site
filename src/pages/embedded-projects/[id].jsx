@@ -29,7 +29,7 @@ const ProjectDetail = (projectDetail, postData, projects) => {
     prev_key,
     next_key = 0;
 
-  if (!projectsDetailDetail) {
+  if (!projectDetail) {
     return <div>Service not found. Please check back later.</div>;
   }
   projects.forEach(function (item, key) {
