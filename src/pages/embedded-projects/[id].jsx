@@ -20,10 +20,9 @@ import {
 } from "react-share";
 import { useTranslate } from "@/src/contexts/TranslateContext";
 
-const ProjectDetail = (projectDetail, postData, projects) => {
+const ProjectDetail = ({ projectDetail, postData, projects }) => {
   const { t } = useTranslate();
 
-  // const postData = props.data;
   let prev_id,
     next_id,
     prev_key,
@@ -32,6 +31,7 @@ const ProjectDetail = (projectDetail, postData, projects) => {
   if (!projectDetail) {
     return <div>iot not found. Please check back later.</div>;
   }
+
   projects.forEach(function (item, key) {
     if (item.id == postData.id) {
       prev_key = key - 1;
@@ -256,7 +256,6 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const projectDetail = Data.items.find((item) => item.id === params.id);
-  //const allProjects = await getSortedProjectsData();
   if (!projectDetail) {
     return {
       notFound: true, // This will trigger a 404 page in Next.js
@@ -267,7 +266,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      projectDetail: projectDetail || null,
+      projectDetail: projectDetail || null, // Ensure it is either an object or null, not undefined
       postData,
       projects: allProjects,
     },
